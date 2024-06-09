@@ -12,7 +12,7 @@ class CheckRole
     {
         $user = Auth::user();
 
-        if (!$user || !in_array($user->role, $roles)) {
+        if (!$user || !$user->roles->pluck('role')->intersect($roles)->count()) {
             return redirect('/gestao/login'); // ou use abort(403);
         }
 

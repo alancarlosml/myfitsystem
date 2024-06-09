@@ -27,9 +27,7 @@ Route::prefix('app')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Auth\StudentLoginController::class, 'logout'])->name('students.logout');
 });
 
-Route::prefix('gestao')->middleware(['auth:user', 'verified'])->group(function () {
-    
-    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'userDashboard'])->name('users.dashboard');
+Route::prefix('gestao')->middleware(['auth:user', 'verified', 'checkRole:superuser'])->group(function () {
 
     Route::get('/usuarios', [\App\Http\Controllers\UserController::class, 'index'])->name('admin.users.index');
     Route::get('/usuarios/novo', [\App\Http\Controllers\UserController::class, 'create'])->name('admin.users.create');
@@ -56,7 +54,13 @@ Route::prefix('gestao')->middleware(['auth:user', 'verified'])->group(function (
     Route::post('/estabelecimentos/{establishment}/contratos/novo', [\App\Http\Controllers\EstablishmentController::class, 'contractStore'])->name('admin.establishments.contracts.store');
     Route::delete('/estabelecimentos/{establishment}/excluir', [\App\Http\Controllers\EstablishmentController::class, 'destroy'])->name('admin.establishments.destroy');
     Route::get('/estabelecimentos/{establishment}/restaurar', [\App\Http\Controllers\EstablishmentController::class, 'restore'])->name('admin.establishments.restore');
+});
 
+
+Route::prefix('gestao')->middleware(['auth:user', 'checkRole:superuser, admin', 'verified'])->group(function () {
+    
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'userDashboard'])->name('users.dashboard');
+    
     // Route::get('/instrutores', [\App\Http\Controllers\InstructorController::class, 'index'])->name('admin.instructors.index');
     // Route::get('/instrutores/novo', [\App\Http\Controllers\InstructorController::class, 'create'])->name('admin.instructors.create');
     // Route::post('/instrutores/novo', [\App\Http\Controllers\InstructorController::class, 'store'])->name('admin.instructors.store');
