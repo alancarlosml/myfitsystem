@@ -16,15 +16,15 @@ Route::middleware(['auth:user', 'verified'])->group(function () {
 require __DIR__.'/auth.php';
 
 Route::prefix('gestao')->group(function () {
-    Route::get('/login', [\App\Http\Controllers\Auth\UserLoginController::class, 'showLoginForm'])->name('users.login');
+    Route::get('/login', [\App\Http\Controllers\Auth\UserLoginController::class, 'showLoginForm'])->name('user.login');
     Route::post('/login', [\App\Http\Controllers\Auth\UserLoginController::class, 'login']);
-    Route::post('/logout', [\App\Http\Controllers\Auth\UserLoginController::class, 'logout'])->name('users.logout');
+    Route::post('/logout', [\App\Http\Controllers\Auth\UserLoginController::class, 'logout'])->name('user.logout');
 });
 
 Route::prefix('app')->group(function () {
-    Route::get('/login', [\App\Http\Controllers\Auth\StudentLoginController::class, 'showLoginForm'])->name('students.login');
+    Route::get('/login', [\App\Http\Controllers\Auth\StudentLoginController::class, 'showLoginForm'])->name('student.login');
     Route::post('/login', [\App\Http\Controllers\Auth\StudentLoginController::class, 'login']);
-    Route::post('/logout', [\App\Http\Controllers\Auth\StudentLoginController::class, 'logout'])->name('students.logout');
+    Route::post('/logout', [\App\Http\Controllers\Auth\StudentLoginController::class, 'logout'])->name('student.logout');
 });
 
 Route::prefix('gestao')->middleware(['auth:user', 'verified', 'checkRole:superuser'])->group(function () {
@@ -57,7 +57,7 @@ Route::prefix('gestao')->middleware(['auth:user', 'verified', 'checkRole:superus
 });
 
 
-Route::prefix('gestao')->middleware(['auth:user', 'checkRole:superuser, admin', 'verified'])->group(function () {
+Route::prefix('gestao')->middleware(['auth:user', 'checkRole:superuser,admin', 'verified'])->group(function () {
     
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'userDashboard'])->name('users.dashboard');
     
@@ -134,6 +134,13 @@ Route::prefix('gestao')->middleware(['auth:user', 'checkRole:superuser, admin', 
     Route::get('/treinos/{workouts}/detalhes', [\App\Http\Controllers\WorkoutController::class, 'view'])->name('admin.workouts.view');
     Route::delete('/treinos/{workouts}/excluir', [\App\Http\Controllers\WorkoutController::class, 'destroy'])->name('admin.workouts.destroy');
     Route::get('/treinos/{workouts}/restaurar', [\App\Http\Controllers\WorkoutController::class, 'restore'])->name('admin.workouts.restore');
+});
+
+
+Route::prefix('app')->middleware(['auth:student', 'verified'])->group(function () {
+    
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'studentDashboard'])->name('students.dashboard');
+    
 });
 
 

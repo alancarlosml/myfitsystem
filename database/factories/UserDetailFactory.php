@@ -15,12 +15,12 @@ class UserDetailFactory extends Factory
 
         // Certifique-se de que há usuários com a função de instrutor
         $instructorIds = User::whereHas('roles', function ($query) {
-            $query->where('role', 'instrutor');
+            $query->where('name', 'instrutor');
         })->pluck('id')->toArray();
 
         // Retorna um ID de instrutor ou cria um novo instrutor se a lista estiver vazia
         $userId = empty($instructorIds) ? User::factory()->hasAttached(
-            \App\Models\Role::where('role', 'instrutor')->first(),
+            \App\Models\Role::where('name', 'instrutor')->first(),
             ['establishment_id' => \App\Models\Establishment::inRandomOrder()->first()->id]
         )->create()->id : $this->faker->randomElement($instructorIds);
 

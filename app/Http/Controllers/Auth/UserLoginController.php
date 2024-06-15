@@ -18,7 +18,7 @@ class UserLoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::guard('user')->attempt($credentials)) {
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/gestao/dashboard');
         }
 
         return back()->withErrors([
@@ -29,6 +29,6 @@ class UserLoginController extends Controller
     public function logout(Request $request)
     {
         Auth::guard('user')->logout();
-        return redirect()->route('users.login');
+        return redirect()->route('user.login');
     }
 }

@@ -12,10 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
+            'custom.auth' => \App\Http\Middleware\CustomAuthenticate::class,
             'checkRole' => \App\Http\Middleware\CheckRole::class,
-            'redirectIfAuthenticated' => \App\Http\Middleware\RedirectIfAuthenticated::class,
             'checkUserGuard' => \App\Http\Middleware\CheckUserGuard::class,
             'checkStudentGuard' => \App\Http\Middleware\CheckStudentGuard::class,
+            'redirectIfAuthenticated' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

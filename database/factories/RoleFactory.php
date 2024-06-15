@@ -16,6 +16,7 @@ class RoleFactory extends Factory
     public function definition()
     {
         $roles = ['superuser', 'admin', 'instrutor', 'recepcionista', 'assistente', 'nutricionista'];
+        $guards = ['user', 'student'];
         
         // Use o contador estático para obter um item da lista de roles
         $role = $roles[self::$index];
@@ -24,9 +25,8 @@ class RoleFactory extends Factory
         self::$index++;
 
         return [
-            'role' => $role,
-            'description' => $this->faker->sentence,
-            'active' => $this->faker->boolean
+            'name' => $role,
+            'guard_name' => $guards[array_rand($guards)],
         ];
     }
 }

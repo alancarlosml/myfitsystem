@@ -18,7 +18,7 @@ class StudentLoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::guard('student')->attempt($credentials)) {
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/app/dashboard');
         }
 
         return back()->withErrors([
@@ -29,6 +29,6 @@ class StudentLoginController extends Controller
     public function logout(Request $request)
     {
         Auth::guard('student')->logout();
-        return redirect()->route('students.login');
+        return redirect()->route('student.login');
     }
 }

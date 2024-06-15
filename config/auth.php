@@ -40,15 +40,18 @@ return [
         'user' => [
             'driver' => 'session',
             'provider' => 'users',
+            'login' => 'user.login',
         ],
 
         'student' => [
             'driver' => 'session',
             'provider' => 'students',
+            'login' => 'student.login',
         ],
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+            'login' => 'user.login',
         ],
     ],
 

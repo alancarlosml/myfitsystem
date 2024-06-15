@@ -8,15 +8,17 @@ use Illuminate\Support\Facades\Auth;
 
 class RedirectIfAuthenticated
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next, $guard = null)
     {
-        if (Auth::guard($guard)->check()) {
-            return redirect('/dashboard'); // Ou a rota adequada para o seu projeto
+        $routes = [
+            'user' => '/gestao/dashboard',
+            'student' => '/app/dashboard',
+        ];
+
+        foreach ($routes as $key => $route) {
+            if (Auth::guard($key)->check()) {
+                return redirect($route);
+            }
         }
 
         return $next($request);

@@ -20,7 +20,7 @@ class UserController extends Controller
     public function create()
     {
         $establishments = \App\Models\Establishment::all();
-        $roles = Role::where('role', '!=', 'superuser')->get();
+        $roles = Role::where('name', '!=', 'superuser')->get();
 
         return view('admin.users.add', ['establishments' => $establishments, 'roles'=> $roles]);
     }
@@ -44,7 +44,7 @@ class UserController extends Controller
     {
         $user = User::with('establishments')->find($user);
         $establishments = \App\Models\Establishment::all();
-        $roles = Role::where('role', '!=', 'superuser')->get();
+        $roles = Role::where('name', '!=', 'superuser')->get();
 
         return view('admin.users.edit', ['user' => $user, 'establishments' => $establishments, 'roles' => $roles]);
     }
@@ -70,7 +70,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($userId);
         $establishments = \App\Models\Establishment::all();
-        $roles = Role::where('role', '!=', 'superuser')->get();
+        $roles = Role::where('name', '!=', 'superuser')->get();
         
         return view('admin.users.view', ['user' => $user, 'establishments' => $establishments, 'roles' => $roles]);
     }

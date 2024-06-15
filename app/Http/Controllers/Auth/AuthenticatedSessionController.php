@@ -19,6 +19,19 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
+    // public function login(Request $request)
+    // {
+    //     $credentials = $request->only('email', 'password');
+
+    //     if (Auth::guard('user')->attempt($credentials)) {
+    //         return redirect()->intended('/gestao/dashboard');
+    //     }
+
+    //     return back()->withErrors([
+    //         'email' => 'As credenciais fornecidas não estão corretas.',
+    //     ]);
+    // }
+
     /**
      * Handle an incoming authentication request.
      */

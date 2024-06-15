@@ -12,7 +12,7 @@ class InstructorController extends Controller
     public function index()
     {
         $users = User::whereHas('establishments', function($query) {
-            $query->where('role', '=', 'instrutor');
+            $query->where('name', '=', 'instrutor');
         })->get();
 
         return view('admin.users.index', ['users' => $users]);
@@ -40,7 +40,7 @@ class InstructorController extends Controller
         $user->instructor()->create($instructorData);
 
         if ($request->has('establishments')) {
-            $user->establishments()->attach($request->input('establishments'), ['role' => 'instrutor']);
+            $user->establishments()->attach($request->input('establishments'), ['name' => 'instrutor']);
         }
 
         return redirect()->route('admin.users.index')->with('success', 'Usuário criado com sucesso!');
@@ -71,7 +71,7 @@ class InstructorController extends Controller
         $user->instructor()->update($instructorData);
 
         if ($request->has('establishments')) {
-            $user->establishments()->sync($request->input('establishments'), ['role' => 'instrutor']);
+            $user->establishments()->sync($request->input('establishments'), ['name' => 'instrutor']);
         }
 
         return redirect()->route('admin.users.index')->with('success', 'Usuário atualizado com sucesso!');

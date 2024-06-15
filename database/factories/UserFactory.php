@@ -45,7 +45,7 @@ class UserFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (User $user) {
-            $roles = Role::where('role', '!=', 'superuser')->get(); // Evita atribuir o papel de superusuário
+            $roles = Role::where('name', '!=', 'superuser')->get(); // Evita atribuir o papel de superusuário
             $establishments = Establishment::all();
 
             // Atribui um papel e estabelecimento aleatório ao usuário

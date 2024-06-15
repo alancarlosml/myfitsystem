@@ -10,7 +10,7 @@
                         Login
                     </h1>
                     <x-alert-error />
-                    <form class="space-y-4 md:space-y-6" method="POST" action="{{ route('students.login') }}">
+                    <form class="space-y-4 md:space-y-6" method="POST" action="{{ route('student.login') }}">
                         @csrf
                         <div>
                             <label for="email"
@@ -48,7 +48,7 @@
                             Entrar
                         </button>
                         <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                            Não tem uma conta ainda? <a href="#" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Criar conta</a>
+                            Não tem uma conta ainda? <a href="{{ route('student.register') }}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Criar conta</a>
                         </p>
                     </form>
                 </div>

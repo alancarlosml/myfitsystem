@@ -10,7 +10,7 @@
                         Gestão - Login
                     </h1>
                     <x-alert-error />
-                    <form class="space-y-4 md:space-y-6" method="POST" action="{{ route('users.login') }}">
+                    <form class="space-y-4 md:space-y-6" method="POST" action="{{ route('user.login') }}">
                         @csrf
                         <div>
                             <label for="email"

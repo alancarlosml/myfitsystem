@@ -15,5 +15,10 @@ class DashboardController extends Controller
     {
         return view('admin.dashboard');
     }
+
+    public function studentDashboard()
+    {
+        return view('student.dashboard');
+    }
     
 }

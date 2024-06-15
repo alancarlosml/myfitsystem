@@ -85,7 +85,7 @@ class EstablishmentController extends Controller
     public function users($establishmentId)
     {
         $establishment = Establishment::findOrFail($establishmentId);
-        $roles = Role::where('role', '!=', 'superuser')->get();
+        $roles = Role::where('name', '!=', 'superuser')->get();
         
         return view('admin.establishments.manage_users', ['establishment' => $establishment, 'roles' => $roles]);
     }

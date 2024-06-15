@@ -15,7 +15,7 @@ class CheckUserGuard
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::guard('web')->check()) {
+        if (Auth::guard('user')->check()) {
             return $next($request);
         }
 

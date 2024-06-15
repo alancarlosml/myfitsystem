@@ -2,11 +2,11 @@
     $guard = null;
     $submenu = null;
     if (Auth::guard('user')->check()) {
-        $guard = 'users';
+        $guard = 'user';
         $submenu = 'gestao';
 
     } elseif (Auth::guard('student')->check()) {
-        $guard = 'students';
+        $guard = 'student';
         $submenu = 'app';
     }
 @endphp
@@ -59,7 +59,7 @@
                                 id="user-menu-button-2" aria-expanded="false" data-dropdown-toggle="dropdown-2">
                             <span class="sr-only">Open user menu</span>
                             <img class="w-8 h-8 rounded-full"
-                                 src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
+                                 src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="{{ Auth::user()->name }}">
                         </button>
                     </div>
 
@@ -105,6 +105,12 @@
         </div>
     </div>
 </nav>
+
+@if(Auth::user()->hasRole('admin', 1))
+aiuuiuiui
+@else
+ssdsd
+@endif
 
 <aside id="logo-sidebar"
        class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"

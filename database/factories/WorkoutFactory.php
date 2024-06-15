@@ -26,7 +26,7 @@ class WorkoutFactory extends Factory
 
         // Use whereHas() para filtrar os instrutores com base na função 'instrutor'
         $instructorIds = $establishment->users()->whereHas('roles', function ($query) {
-            $query->where('role', 'instrutor');
+            $query->where('name', 'instrutor');
         })->pluck('users.id')->toArray();
 
         $studentIds = $establishment->students()->pluck('students.id')->toArray();

@@ -10,9 +10,10 @@ class CheckRole
 {
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        $user = Auth::user();
+        $guard = 'user';
+        $user = Auth::guard($guard)->user();
 
-        if (!$user || !$user->roles->pluck('role')->intersect($roles)->count()) {
+        if (!$user || !$user->roles->pluck('name')->intersect($roles)->count()) {
             return redirect('/gestao/login'); // ou use abort(403);
         }
 
