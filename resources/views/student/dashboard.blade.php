@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-header>
-        <x-slot:title>Dashboard</x-slot:title>
+        <x-slot:title>Painel de controle</x-slot:title>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia sunt, assumenda dignissimos doloremque
         reiciendis autem iusto saepe ut minima nesciunt?
     </x-header>

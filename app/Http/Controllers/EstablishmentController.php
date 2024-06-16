@@ -6,7 +6,10 @@ use App\Http\Requests\StoreEstablishmentRequest;
 use App\Http\Requests\UpdateEstablishmentRequest;
 use App\Models\Establishment;
 use App\Models\Role;
+use App\Models\Student;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EstablishmentController extends Controller
 {
@@ -137,6 +140,41 @@ class EstablishmentController extends Controller
         $establishment->restore();
 
         return redirect()->route('admin.establishments.index')->with('success', 'Estabelecimento restaurado com sucesso.');
+    }
+
+    public function selectEstablishment()
+    {
+        $guard = Auth::guard('user')->check() ? 'user' : 'student';
+        $user = Auth::guard($guard)->user();
+        $establishments = [];
+        if($guard == 'user') {
+            $establishments = $user->establishments()->with('roles')->get();
+        } else {
+            $student = Student::where('id', $user->id)->first();
+            $establishments = $student->student_establishments()->get();
+        }
+        
+        return view('auth.select-establishment', compact('establishments'));
+    }
+
+    public function storeEstablishment(Request $request)
+    {
+        $request->validate([
+            'establishment_id' => 'required|exists:establishments,id',
+        ]);
+
+        // Armazenar o estabelecimento na sessão
+        session(['establishment_id' => $request->establishment_id]);
+
+        $guard = Auth::guard('user')->check() ? 'user' : 'student';
+        $redirect = '/';
+        if($guard == 'user') {
+            $redirect = '/gestao/dashboard';
+        } else {
+            $redirect = '/app/dashboard';
+        }
+
+        return redirect()->intended($redirect);
     }
 
 }

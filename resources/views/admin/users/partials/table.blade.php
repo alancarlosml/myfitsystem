@@ -63,7 +63,7 @@
                         <script>
                             function viewUser(event, userId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/usuarios') }}/${userId}/detalhes`;
+                                var editUrl = `{{ url('/gestao/usuarios') }}/${userId}/detalhes`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -74,7 +74,7 @@
                         <script>
                             function editUser(event, userId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/usuarios') }}/${userId}/editar`;
+                                var editUrl = `{{ url('/gestao/usuarios') }}/${userId}/editar`;
                                 window.location.href = editUrl;
                             }
                         </script>

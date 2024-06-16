@@ -105,20 +105,20 @@
         <script>
             function viewEstablishment(event, establishmentId) {
                 event.preventDefault();
-                var editUrl = `{{ url('/estabelecimentos') }}/${establishmentId}/detalhes`;
+                var editUrl = `{{ url('/gestao/estabelecimentos') }}/${establishmentId}/detalhes`;
                 window.location.href = editUrl;
             }
 
             function editEstablishment(event, establishmentId) {
                 event.preventDefault();
-                var editUrl = `{{ url('/estabelecimentos') }}/${establishmentId}/editar`;
+                var editUrl = `{{ url('/gestao/estabelecimentos') }}/${establishmentId}/editar`;
                 window.location.href = editUrl;
             }
 
             function deleteEstablishment(event, establishmentId) {
                 event.preventDefault();
 
-                fetch(`/estabelecimentos/${establishmentId}/excluir`, {
+                fetch(`/gestao/estabelecimentos/${establishmentId}/excluir`, {
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',

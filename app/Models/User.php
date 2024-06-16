@@ -64,9 +64,15 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function establishments()
     {
-        return $this->belongsToMany(Establishment::class, 'role_user', 'user_id', 'establishment_id')
-                    ->withPivot('role_id')
+        return $this->belongsToMany(Establishment::class, 'role_user')
+                    ->withPivot('role_id', 'active')
                     ->withTimestamps();
+    }
+
+    public function getRoleForEstablishment($establishmentId)
+    {
+        $roleUser = $this->establishments()->where('establishment_id', $establishmentId)->first();
+        return $roleUser ? Role::find($roleUser->pivot->role_id) : null;
     }
 
     public function workouts()

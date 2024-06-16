@@ -12,11 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
+            'startSession' => \Illuminate\Session\Middleware\StartSession::class,
             'custom.auth' => \App\Http\Middleware\CustomAuthenticate::class,
-            'checkRole' => \App\Http\Middleware\CheckRole::class,
-            'checkUserGuard' => \App\Http\Middleware\CheckUserGuard::class,
-            'checkStudentGuard' => \App\Http\Middleware\CheckStudentGuard::class,
+            'auth.user' => \App\Http\Middleware\CheckUserGuard::class,
+            'auth.student' => \App\Http\Middleware\CheckStudentGuard::class,
             'redirectIfAuthenticated' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+            'role.establishment' => \App\Http\Middleware\CheckRoleInEstablishment::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

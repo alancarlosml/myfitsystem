@@ -55,7 +55,7 @@
                         <script>
                             function viewModality(event, modalityId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/modalidades') }}/${modalityId}/detalhes`;
+                                var editUrl = `{{ url('/gestao/modalidades') }}/${modalityId}/detalhes`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -66,7 +66,7 @@
                         <script>
                             function editModality(event, modalityId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/modalidades') }}/${modalityId}/editar`;
+                                var editUrl = `{{ url('/gestao/modalidades') }}/${modalityId}/editar`;
                                 window.location.href = editUrl;
                             }
                         </script>

@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Traits\HasRoles;
 
 class Establishment extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes, HasRoles;
+
 
     protected $fillable = [
         'name',
@@ -34,7 +35,7 @@ class Establishment extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'role_user')
-                    ->withPivot('role_id')
+                    ->withPivot('role_id', 'active')
                     ->withTimestamps();
     }
 
@@ -61,5 +62,12 @@ class Establishment extends Model
     public function modalities()
     {
         return $this->hasMany(Modality::class);
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(User::class, 'role_user')
+                    ->withPivot('role_id') // Carregar o role_id da tabela pivot
+                    ->withTimestamps();
     }
 }

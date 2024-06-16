@@ -55,7 +55,7 @@
                         <script>
                             function viewCategory(event, categoryId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/categorias') }}/${categoryId}/detalhes`;
+                                var editUrl = `{{ url('/gestao/categorias') }}/${categoryId}/detalhes`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -66,7 +66,7 @@
                         <script>
                             function editCategory(event, categoryId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/categorias') }}/${categoryId}/editar`;
+                                var editUrl = `{{ url('/gestao/categorias') }}/${categoryId}/editar`;
                                 window.location.href = editUrl;
                             }
                         </script>

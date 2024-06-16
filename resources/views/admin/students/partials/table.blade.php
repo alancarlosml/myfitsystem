@@ -69,7 +69,7 @@
                         <script>
                             function viewStudent(event, studentId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/alunos') }}/${studentId}/detalhes`;
+                                var editUrl = `{{ url('/gestao/alunos') }}/${studentId}/detalhes`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -80,7 +80,7 @@
                         <script>
                             function editStudent(event, studentId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/alunos') }}/${studentId}/editar`;
+                                var editUrl = `{{ url('/gestao/alunos') }}/${studentId}/editar`;
                                 window.location.href = editUrl;
                             }
                         </script>

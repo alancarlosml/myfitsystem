@@ -311,7 +311,7 @@
                                                         <script>
                                                             function editEstablishment(event, establishmentId) {
                                                                 event.preventDefault();
-                                                                var editUrl = `{{ url('/estabelecimentos') }}/${establishmentId}/editar`;
+                                                                var editUrl = `{{ url('/gestao/estabelecimentos') }}/${establishmentId}/editar`;
                                                                 window.location.href = editUrl;
                                                             }
                                                         </script>

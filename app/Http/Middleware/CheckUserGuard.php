@@ -13,12 +13,12 @@ class CheckUserGuard
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next, $guard = 'user')
     {
-        if (Auth::guard('user')->check()) {
-            return $next($request);
+        if (!Auth::guard($guard)->check()) {
+            return redirect()->route('gestao.login');
         }
 
-        return redirect('/gestao/login');
+        return $next($request);
     }
 }
