@@ -173,11 +173,16 @@
                                                     @endif
                                                 </td>
                                                 <td class="py-4 px-6">
-                                                    @if ($student->active == 1)
-                                                        {{ 'Ativo' }}
-                                                    @elseif ($student->active == 0)
-                                                        {{ 'Inativo' }}
-                                                    @endif
+                                                    <div class="flex items-center">
+                                                        <div
+                                                             class="inline-block w-4 h-4 mr-2 rounded-full {{ $establishment->active ? 'bg-green-700' : 'bg-red-700' }}">
+                                                        </div>
+                                                        @if ($student->active == 1)
+                                                            {{ 'Ativo' }}
+                                                        @elseif ($student->active == 0)
+                                                            {{ 'Inativo' }}
+                                                        @endif
+                                                    </div>
                                                 </td>
                                                 <td class="py-4 px-6">
                                                     <div class="flex items-center space-x-3">

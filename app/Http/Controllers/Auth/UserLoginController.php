@@ -27,7 +27,7 @@ class UserLoginController extends Controller
             // }
 
 
-            $establishments = $user->establishments()->get();
+            $establishments = $user->getEstablishmentsActive()->get();
             
             if ($establishments->count() == 1) {
                 $establishment = $establishments->first();

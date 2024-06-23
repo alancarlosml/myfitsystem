@@ -29,8 +29,22 @@ class WorkoutFactory extends Factory
             $query->where('name', 'instrutor');
         })->pluck('users.id')->toArray();
 
+        // Verificar se há instrutores disponíveis
+        if (empty($instructorIds)) {
+            throw new \Exception("Não há instrutores associados ao estabelecimento com o ID {$establishment->id}");
+        }
+
         $studentIds = $establishment->students()->pluck('students.id')->toArray();
         $exerciseIds = $establishment->exercises()->pluck('exercises.id')->toArray();
+
+        // Verificar se há estudantes e exercícios disponíveis
+        if (empty($studentIds)) {
+            throw new \Exception("Não há estudantes associados ao estabelecimento com o ID {$establishment->id}");
+        }
+
+        if (empty($exerciseIds)) {
+            throw new \Exception("Não há exercícios associados ao estabelecimento com o ID {$establishment->id}");
+        }
 
         return [
             'establishment_id' => $establishment->id,
@@ -45,4 +59,5 @@ class WorkoutFactory extends Factory
             'active' => $this->faker->boolean,
         ];
     }
+
 }

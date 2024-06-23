@@ -9,17 +9,20 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RoleFactory extends Factory
 {
-    protected $model = Role::class;
-
     protected static $index = 0;
+    protected static $roles = ['superuser', 'admin', 'instrutor', 'recepcionista', 'assistente', 'nutricionista'];
 
     public function definition()
     {
-        $roles = ['superuser', 'admin', 'instrutor', 'recepcionista', 'assistente', 'nutricionista'];
-        $guards = ['user', 'student'];
-        
+        $guards = ['user'];
+
+        // Verifique se o índice está dentro do intervalo
+        if (self::$index >= count(self::$roles)) {
+            throw new \Exception("Todos os roles foram atribuídos. Não é possível gerar mais roles únicos.");
+        }
+
         // Use o contador estático para obter um item da lista de roles
-        $role = $roles[self::$index];
+        $role = self::$roles[self::$index];
 
         // Incrementa o contador
         self::$index++;

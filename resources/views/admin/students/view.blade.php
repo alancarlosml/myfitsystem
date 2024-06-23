@@ -159,7 +159,7 @@
                             </div>
                             <div class="overflow-x-auto">
                                 @include('admin.students.partials.student_establishments', [
-                                    'establishments' => $student->student_establishments,
+                                    'establishments' => $student->establishments,
                                 ])
                             </div>
                             <nav class="flex flex-col items-start justify-between p-4 space-y-3 md:flex-row md:items-center md:space-y-0"

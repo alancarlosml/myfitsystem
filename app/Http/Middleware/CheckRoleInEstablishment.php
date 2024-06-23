@@ -11,8 +11,9 @@ class CheckRoleInEstablishment
     public function handle(Request $request, Closure $next, ...$roles)
     {
         $user = Auth::user();
-        #$establishmentId = session('establishment_id');
-        $establishmentId = 3;
+
+        $establishmentId = session('establishment_id');
+        // $establishmentId = 3;
 
         if ($user && $establishmentId) {
             $userRole = $user->getRoleForEstablishment($establishmentId);

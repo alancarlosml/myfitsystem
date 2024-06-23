@@ -58,7 +58,7 @@ class Student extends Authenticatable implements MustVerifyEmail
         'deleted_at',
     ];
 
-    public function student_establishments()
+    public function establishments()
     {
         return $this->belongsToMany(Establishment::class, 'student_establishment');
     }

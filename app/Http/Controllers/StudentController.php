@@ -14,7 +14,7 @@ class StudentController extends Controller
 {
     public function index()
     {
-        $students = \App\Models\Student::all();
+        $students = Student::all();
         return view('admin.students.index', ['students' => $students]);
     }
 
@@ -33,7 +33,7 @@ class StudentController extends Controller
             $validatedData['active'] = 0;
         }
 
-        \App\Models\Student::create($validatedData);
+        Student::create($validatedData);
 
         return redirect()->route('admin.students.index')->with('success', 'Aluno criado com sucesso!');
     }
@@ -41,15 +41,15 @@ class StudentController extends Controller
 
     public function edit($student)
     {
-        $student = \App\Models\Student::find($student);
-        $genders = \App\Models\Student::pluck('gender', 'gender')->unique();
+        $student = Student::find($student);
+        $genders = Student::pluck('gender', 'gender')->unique();
 
         return view('admin.students.edit', ['student' => $student, 'genders' => $genders]);
     }
 
     public function update(UpdateStudentRequest $request, $studentId)
     {
-        $student = \App\Models\Student::findOrFail($studentId);
+        $student = Student::findOrFail($studentId);
 
         $validatedData = $request->validated();
 
@@ -66,7 +66,7 @@ class StudentController extends Controller
 
     public function view($studentId)
     {
-        $student = \App\Models\Student::findOrFail($studentId);
+        $student = Student::findOrFail($studentId);
         
         return view('admin.students.view', ['student' => $student]);
     }
@@ -74,13 +74,13 @@ class StudentController extends Controller
 
     public function destroy($studentId)
     {
-        $student = \App\Models\Student::findOrFail($studentId);
+        $student = Student::findOrFail($studentId);
         $student->delete();
     }
 
     public function restore($studentId)
     {
-        $student = \App\Models\Student::withTrashed()->findOrFail($studentId);
+        $student = Student::withTrashed()->findOrFail($studentId);
         $student->restore();
 
         return redirect()->route('admin.students.index')->with('success', 'Aluno restaurado com sucesso.');
@@ -88,10 +88,10 @@ class StudentController extends Controller
 
     public function contracts($studentId, $establishmentId){
 
-        $student = \App\Models\Student::findOrFail($studentId);
-        $establishment = \App\Models\Establishment::findOrFail($establishmentId);
+        $student = Student::findOrFail($studentId);
+        $establishment = Establishment::findOrFail($establishmentId);
 
-        $contracts = \App\Models\StudentContracts::where('student_id', $studentId)->where('establishment_id', $establishmentId)->get();
+        $contracts = StudentContracts::where('student_id', $studentId)->where('establishment_id', $establishmentId)->get();
 
         return view('admin.students.contracts', ['student' => $student, 'establishment' => $establishment, 'contracts' => $contracts]);
 

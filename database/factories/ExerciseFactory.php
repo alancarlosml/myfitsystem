@@ -29,7 +29,7 @@ class ExerciseFactory extends Factory
                 return \App\Models\Category::all()->random()->id;
             },
             'name' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
+            'description' => $this->faker->text(255),
             'exercise_picture' => $this->faker->imageUrl(), // Pode adicionar um link para uma imagem aleatória, se desejar
             'active' => true,
         ];

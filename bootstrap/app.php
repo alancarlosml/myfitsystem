@@ -12,7 +12,6 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'startSession' => \Illuminate\Session\Middleware\StartSession::class,
             'custom.auth' => \App\Http\Middleware\CustomAuthenticate::class,
             'auth.user' => \App\Http\Middleware\CheckUserGuard::class,
             'auth.student' => \App\Http\Middleware\CheckStudentGuard::class,

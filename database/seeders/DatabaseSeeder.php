@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
         Establishment::factory(5)->create();
         EstablishmentContracts::factory(10)->create();
         
-        Role::factory(5)->create();
+        #Role::factory(5)->create();
         User::factory(15)->create();
         UserDetail::factory(15)->create();
 

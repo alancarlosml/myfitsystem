@@ -148,10 +148,10 @@ class EstablishmentController extends Controller
         $user = Auth::guard($guard)->user();
         $establishments = [];
         if($guard == 'user') {
-            $establishments = $user->establishments()->with('roles')->get();
+            $establishments = $user->getEstablishmentsActive()->with('roles')->get();
         } else {
             $student = Student::where('id', $user->id)->first();
-            $establishments = $student->student_establishments()->get();
+            $establishments = $student->establishments()->get();
         }
         
         return view('auth.select-establishment', compact('establishments'));

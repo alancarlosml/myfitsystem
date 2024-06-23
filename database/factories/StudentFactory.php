@@ -24,17 +24,30 @@ class StudentFactory extends Factory
     public function definition()
     {
         $genders = ['masculino', 'feminino', 'outro'];
+        
+        $uniqueEmail = $this->faker->unique()->safeEmail;
+        $uniqueCpf = $this->faker->unique()->numerify('###########'); // CPF com 11 dígitos
+
+        // Verificar se o email já existe no banco de dados
+        while (\App\Models\Student::where('email', $uniqueEmail)->exists()) {
+            $uniqueEmail = $this->faker->unique()->safeEmail;
+        }
+
+        // Verificar se o CPF já existe no banco de dados
+        while (\App\Models\Student::where('cpf', $uniqueCpf)->exists()) {
+            $uniqueCpf = $this->faker->unique()->numerify('###########');
+        }
 
         return [
             'name' => $this->faker->name,
-            'cpf' => $this->faker->unique()->numerify('###########'), // Assuming 11 digits CPF
-            'email' => $this->faker->unique()->safeEmail,
+            'cpf' => $uniqueCpf,
+            'email' => $uniqueEmail,
             'email_verified_at' => now(),
-            'password' => bcrypt('password'), // Change 'password' to your desired default password
+            'password' => bcrypt('password'), // Alterar 'password' para a senha desejada
             'birthdate' => $this->faker->date(),
             'address' => $this->faker->address,
             'phone' => $this->faker->phoneNumber,
-            'profile_picture' => $this->faker->imageUrl(), // Assuming you want a random image URL
+            'profile_picture' => $this->faker->imageUrl(), // URL aleatória para a imagem de perfil
             'gender' => $this->faker->randomElement($genders),
             'active' => $this->faker->boolean(90),
             'remember_token' => Str::random(10),

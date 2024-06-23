@@ -21,7 +21,7 @@ class StudentLoginController extends Controller
         if (Auth::guard('student')->attempt($credentials)) {
             $user = Auth::guard('student')->user();
             $student = Student::where('id', $user->id)->first();
-            $establishments = $student->student_establishments()->get();
+            $establishments = $student->establishments()->get();
             
             if ($establishments->count() == 1) {
                 $establishment = $establishments->first();

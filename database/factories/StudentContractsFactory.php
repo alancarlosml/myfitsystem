@@ -12,11 +12,19 @@ class StudentContractsFactory extends Factory
 
     public function definition()
     {
-        // Obter o ID de um estabelecimento aleatório
-        $establishmentId = Establishment::all()->random()->id;
+        // Obter todos os IDs de estabelecimentos que têm alunos associados
+        $establishmentIdsWithStudents = Establishment::has('students')->pluck('id');
 
-        // Verificar se há alunos associados ao estabelecimento
-        $studentIds = Student::whereHas('student_establishments', function ($query) use ($establishmentId) {
+        // Verificar se há estabelecimentos com alunos
+        if ($establishmentIdsWithStudents->isEmpty()) {
+            throw new \Exception("Não há estabelecimentos com alunos associados");
+        }
+
+        // Obter um ID de estabelecimento aleatório com alunos associados
+        $establishmentId = $establishmentIdsWithStudents->random();
+
+        // Obter os IDs dos alunos associados ao estabelecimento selecionado
+        $studentIds = Student::whereHas('establishments', function ($query) use ($establishmentId) {
             $query->where('establishment_id', $establishmentId);
         })->pluck('id');
 
@@ -34,6 +42,7 @@ class StudentContractsFactory extends Factory
 
         $serviceName = $this->faker->randomElement($serviceNames);
         $startDate = $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d');
+        // Garantir que a data de pagamento é anterior ou igual à data de início
         $paymentDate = $this->faker->dateTimeBetween('-1 year', $startDate)->format('Y-m-d');
 
         switch ($serviceName) {

@@ -1,22 +1,16 @@
 <x-app-layout>
     <x-header>
         <x-slot:title>Painel de controle</x-slot:title>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia sunt, assumenda dignissimos doloremque
-        reiciendis autem iusto saepe ut minima nesciunt?
     </x-header>
 
     <section class="mt-8 flex flex-col md:flex-row gap-8">
         <x-card>
-            <x-slot:title>2021 Stats</x-slot:title>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eveniet, necessitatibus!
+            <x-slot:title>Aulas em Junho</x-slot:title>
+            13
         </x-card>
         <x-card>
-            <x-slot:title>2022 Stats</x-slot:title>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ad, fugit.
-        </x-card>
-        <x-card>
-            <x-slot:title>2022 Stats</x-slot:title>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ad, fugit.
+            <x-slot:title>Aulas em {{ date('Y') }}</x-slot:title>
+            45
         </x-card>
     </section>
 
