@@ -13,12 +13,15 @@ use App\Http\Controllers\ClassScheduleController;
 use App\Http\Controllers\ClassBookingController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\WorkoutController;
+use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
 // Rota padrão
 Route::get('/', function () {
-    return view('welcome');
+    return view('site.welcome');
 });
+
+Route::get('/saiba-mais', [SiteController::class, 'about'])->name('saiba-mais');
 
 Route::get('login', function () {
     return redirect('/');

@@ -90,5 +90,3 @@ Route::prefix('app')->group(function () {
     // Rota de atualização de senha para alunos
     Route::put('/password/update', [PasswordController::class, 'update'])->name('student.password.update');
 });
-
-return Route::get('/', function () {return view('welcome');});
