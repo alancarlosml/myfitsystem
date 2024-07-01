@@ -4,17 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
-use Illuminate\Http\Request;
+use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class CategoryController extends Controller
 {
+    protected $role;
+
+    public function __construct()
+    {
+        $this->role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
+    }
+
     public function index()
     {
-        $categories = \App\Models\Category::select('categories.*')
-                                      ->leftJoin('establishments', 'categories.establishment_id', '=', 'establishments.id')
-                                      ->orderBy('establishments.name')
-                                      ->with('establishment')
-                                      ->get();
+        $query = \App\Models\Category::select('categories.*')
+                          ->leftJoin('establishments', 'categories.establishment_id', '=', 'establishments.id')
+                          ->orderBy('establishments.name')
+                          ->with('establishment');
+
+        if ($this->role && !in_array($this->role->name, ['superuser'])){
+            $query->where('establishments.id', Session::get('establishment_id'));
+        }
+
+        $categories = $query->get();
                                       
         return view('admin.categories.index', ['categories' => $categories]);
     }
@@ -34,6 +48,10 @@ class CategoryController extends Controller
             $validatedData['active'] = 1;
         } else {
             $validatedData['active'] = 0;
+        }
+
+        if ($this->role && !in_array($this->role->name, ['superuser'])){
+            $validatedData['establishment_id'] = Session::get('establishment_id');
         }
 
         \App\Models\Category::create($validatedData);
@@ -58,6 +76,10 @@ class CategoryController extends Controller
             $validatedData['active'] = 1;
         } else {
             $validatedData['active'] = 0;
+        }
+
+        if ($this->role && !in_array($this->role->name, ['superuser'])){
+            $validatedData['establishment_id'] = Session::get('establishment_id');
         }
 
         $category->update($validatedData);

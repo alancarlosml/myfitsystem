@@ -1,10 +1,10 @@
 <x-site-layout>
     <!-- Start block -->
     <section class="bg-white dark:bg-gray-900">
-        <div class="grid max-w-screen-xl px-4 pt-20 pb-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 lg:pt-40">
+        <div class="grid max-w-screen-xl px-4 pt-24 pb-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 lg:pt-40">
             <!-- Título e Texto -->
             <div class="lg:col-span-12">
-                <h2 class="w-full mb-4 text-3xl font-extrabold leading-none tracking-tight md:text-4xl xl:text-5xl dark:text-white">
+                <h2 class="w-full mb-4 text-3xl font-extrabold leading-none tracking-tight md:text-4xl xl:text-4xl dark:text-white">
                     Entre em Contato Conosco
                 </h2>
                 <p class="w-full mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">

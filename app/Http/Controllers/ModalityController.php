@@ -4,17 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreModalityRequest;
 use App\Http\Requests\UpdateModalityRequest;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class ModalityController extends Controller
 {
+    protected $role;
+    public function __construct()
+    {
+        $this->role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
+    }
+
     public function index()
     {
-        $modalities = \App\Models\Modality::select('modalities.*')
+        $query = \App\Models\Modality::select('modalities.*')
                                       ->leftJoin('establishments', 'modalities.establishment_id', '=', 'establishments.id')
                                       ->orderBy('establishments.name')
-                                      ->with('establishment')
-                                      ->get();
+                                      ->with('establishment');
+
+        if ($this->role && !in_array($this->role->name, ['superuser'])){
+            $query->where('establishments.id', Session::get('establishment_id'));
+        }
+
+        $modalities = $query->get();
                                       
         return view('admin.modalities.index', ['modalities' => $modalities]);
     }
@@ -34,6 +46,10 @@ class ModalityController extends Controller
             $validatedData['active'] = 1;
         } else {
             $validatedData['active'] = 0;
+        }
+
+        if ($this->role && !in_array($this->role->name, ['superuser'])){
+            $validatedData['establishment_id'] = Session::get('establishment_id');
         }
 
         \App\Models\Modality::create($validatedData);
@@ -58,6 +74,10 @@ class ModalityController extends Controller
             $validatedData['active'] = 1;
         } else {
             $validatedData['active'] = 0;
+        }
+
+        if ($this->role && !in_array($this->role->name, ['superuser'])){
+            $validatedData['establishment_id'] = Session::get('establishment_id');
         }
 
         $modality->update($validatedData);
