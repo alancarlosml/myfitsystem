@@ -49,20 +49,7 @@ Route::prefix('gestao')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'userDashboard'])->name('users.dashboard');
 
         Route::middleware(['role.establishment:superuser'])->group(function () {
-        
-            // Rotas de usuários
-            Route::get('/usuarios', [UserController::class, 'index'])->name('admin.users.index');
-            Route::get('/usuarios/novo', [UserController::class, 'create'])->name('admin.users.create');
-            Route::post('/usuarios/novo', [UserController::class, 'store'])->name('admin.users.store');
-            Route::get('/usuarios/{user}/editar', [UserController::class, 'edit'])->name('admin.users.edit');
-            Route::put('/usuarios/{user}/editar', [UserController::class, 'update'])->name('admin.users.update');
-            Route::get('/usuarios/{user}/detalhes', [UserController::class, 'view'])->name('admin.users.view');
-            Route::delete('/usuarios/{user}/excluir', [UserController::class, 'destroy'])->name('admin.users.destroy');
-            Route::get('/usuarios/{user}/restaurar', [UserController::class, 'restore'])->name('admin.users.restore');
-            Route::post('/usuarios/{user}/vincular', [UserController::class, 'linkEstablishment'])->name('admin.users.establishments.store');
-            Route::put('/usuarios/{user}/vincular/editar', [UserController::class, 'updateLinkEstablishment'])->name('admin.users.establishments.update');
-            Route::get('/usuarios/{user}/desvincular/{establishment}', [UserController::class, 'unlinkEstablishment'])->name('admin.users.establishments.destroy');
-            
+  
             // Rotas de estabelecimentos
             Route::get('/estabelecimentos', [EstablishmentController::class, 'index'])->name('admin.establishments.index');
             Route::get('/estabelecimentos/novo', [EstablishmentController::class, 'create'])->name('admin.establishments.create');
@@ -103,6 +90,19 @@ Route::prefix('gestao')->group(function () {
             Route::get('/alunos/{student}/contratos/{establishment}', [StudentController::class, 'contracts'])->name('admin.students.contracts');
             Route::post('/alunos/{student}/contratos/{establishment}/novo', [StudentController::class, 'contractStore'])->name('admin.students.contracts.store');
 
+            // Rotas de colaboradores
+            Route::get('/colaboradores', [UserController::class, 'index'])->name('admin.users.index');
+            Route::get('/colaboradores/novo', [UserController::class, 'create'])->name('admin.users.create');
+            Route::post('/colaboradores/novo', [UserController::class, 'store'])->name('admin.users.store');
+            Route::get('/colaboradores/{user}/editar', [UserController::class, 'edit'])->name('admin.users.edit');
+            Route::put('/colaboradores/{user}/editar', [UserController::class, 'update'])->name('admin.users.update');
+            Route::get('/colaboradores/{user}/detalhes', [UserController::class, 'view'])->name('admin.users.view');
+            Route::delete('/colaboradores/{user}/excluir', [UserController::class, 'destroy'])->name('admin.users.destroy');
+            Route::get('/colaboradores/{user}/restaurar', [UserController::class, 'restore'])->name('admin.users.restore');
+            Route::post('/colaboradores/{user}/vincular', [UserController::class, 'linkEstablishment'])->name('admin.users.establishments.store');
+            Route::put('/colaboradores/{user}/vincular/editar', [UserController::class, 'updateLinkEstablishment'])->name('admin.users.establishments.update');
+            Route::get('/colaboradores/{user}/desvincular/{establishment}', [UserController::class, 'unlinkEstablishment'])->name('admin.users.establishments.destroy');
+
             // Rotas de modalidades
             Route::get('/modalidades', [ModalityController::class, 'index'])->name('admin.modalities.index');
             Route::get('/modalidades/novo', [ModalityController::class, 'create'])->name('admin.modalities.create');
@@ -122,6 +122,7 @@ Route::prefix('gestao')->group(function () {
             Route::get('/exercicios/{exercises}/detalhes', [ExerciseController::class, 'view'])->name('admin.exercises.view');
             Route::delete('/exercicios/{exercises}/excluir', [ExerciseController::class, 'destroy'])->name('admin.exercises.destroy');
             Route::get('/exercicios/{exercises}/restaurar', [ExerciseController::class, 'restore'])->name('admin.exercises.restore');
+            Route::get('/exercicios/{exercises}/remover-imagem', [ExerciseController::class, 'removeExercisePicture'])->name('admin.exercises.remove-picture');
 
             // Rotas de aulas
             Route::get('/aulas', [ClassScheduleController::class, 'index'])->name('admin.class_schedules.index');
@@ -158,47 +159,47 @@ Route::prefix('gestao')->group(function () {
 });
 
 // Rotas para app (alunos)
-Route::prefix('app')->group(function () {
-    // Rota de login para alunos
-    Route::get('/login', [StudentLoginController::class, 'showLoginForm'])->name('student.login');
-    Route::post('/login', [StudentLoginController::class, 'login']);
-    Route::post('/logout', [StudentLoginController::class, 'logout'])->name('student.logout');
+// Route::prefix('app')->group(function () {
+//     // Rota de login para alunos
+//     Route::get('/login', [StudentLoginController::class, 'showLoginForm'])->name('student.login');
+//     Route::post('/login', [StudentLoginController::class, 'login']);
+//     Route::post('/logout', [StudentLoginController::class, 'logout'])->name('student.logout');
     
-    // Rotas protegidas para alunos autenticados
-    Route::middleware(['auth:student', 'verified'])->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'studentDashboard'])->name('students.dashboard');
+//     // Rotas protegidas para alunos autenticados
+//     Route::middleware(['auth:student', 'verified'])->group(function () {
+//         Route::get('/dashboard', [DashboardController::class, 'studentDashboard'])->name('students.dashboard');
         
-        // Rotas de aulas
-        Route::get('/aulas', [ClassScheduleController::class, 'index'])->name('admin.class_schedules.index');
-        Route::get('/aulas/novo', [ClassScheduleController::class, 'create'])->name('admin.class_schedules.create');
-        Route::post('/aulas/novo', [ClassScheduleController::class, 'store'])->name('admin.class_schedules.store');
-        Route::get('/aulas/{class_schedules}/editar', [ClassScheduleController::class, 'edit'])->name('admin.class_schedules.edit');
-        Route::put('/aulas/{class_schedules}/editar', [ClassScheduleController::class, 'update'])->name('admin.class_schedules.update');
-        Route::get('/aulas/{class_schedules}/detalhes', [ClassScheduleController::class, 'view'])->name('admin.class_schedules.view');
-        Route::delete('/aulas/{class_schedules}/excluir', [ClassScheduleController::class, 'destroy'])->name('admin.class_schedules.destroy');
-        Route::get('/aulas/{class_schedules}/restaurar', [ClassScheduleController::class, 'restore'])->name('admin.class_schedules.restore');
+//         // Rotas de aulas
+//         Route::get('/aulas', [ClassScheduleController::class, 'index'])->name('admin.class_schedules.index');
+//         Route::get('/aulas/novo', [ClassScheduleController::class, 'create'])->name('admin.class_schedules.create');
+//         Route::post('/aulas/novo', [ClassScheduleController::class, 'store'])->name('admin.class_schedules.store');
+//         Route::get('/aulas/{class_schedules}/editar', [ClassScheduleController::class, 'edit'])->name('admin.class_schedules.edit');
+//         Route::put('/aulas/{class_schedules}/editar', [ClassScheduleController::class, 'update'])->name('admin.class_schedules.update');
+//         Route::get('/aulas/{class_schedules}/detalhes', [ClassScheduleController::class, 'view'])->name('admin.class_schedules.view');
+//         Route::delete('/aulas/{class_schedules}/excluir', [ClassScheduleController::class, 'destroy'])->name('admin.class_schedules.destroy');
+//         Route::get('/aulas/{class_schedules}/restaurar', [ClassScheduleController::class, 'restore'])->name('admin.class_schedules.restore');
 
-        // Rotas de reservas
-        Route::get('/reservas', [ClassBookingController::class, 'index'])->name('admin.class_bookings.index');
-        Route::get('/reservas/novo', [ClassBookingController::class, 'create'])->name('admin.class_bookings.create');
-        Route::post('/reservas/novo', [ClassBookingController::class, 'store'])->name('admin.class_bookings.store');
-        Route::get('/reservas/{class_bookings}/editar', [ClassBookingController::class, 'edit'])->name('admin.class_bookings.edit');
-        Route::put('/reservas/{class_bookings}/editar', [ClassBookingController::class, 'update'])->name('admin.class_bookings.update');
-        Route::get('/reservas/{class_bookings}/detalhes', [ClassBookingController::class, 'view'])->name('admin.class_bookings.view');
-        Route::delete('/reservas/{class_bookings}/excluir', [ClassBookingController::class, 'destroy'])->name('admin.class_bookings.destroy');
-        Route::get('/reservas/{class_bookings}/restaurar', [ClassBookingController::class, 'restore'])->name('admin.class_bookings.restore');
+//         // Rotas de reservas
+//         Route::get('/reservas', [ClassBookingController::class, 'index'])->name('admin.class_bookings.index');
+//         Route::get('/reservas/novo', [ClassBookingController::class, 'create'])->name('admin.class_bookings.create');
+//         Route::post('/reservas/novo', [ClassBookingController::class, 'store'])->name('admin.class_bookings.store');
+//         Route::get('/reservas/{class_bookings}/editar', [ClassBookingController::class, 'edit'])->name('admin.class_bookings.edit');
+//         Route::put('/reservas/{class_bookings}/editar', [ClassBookingController::class, 'update'])->name('admin.class_bookings.update');
+//         Route::get('/reservas/{class_bookings}/detalhes', [ClassBookingController::class, 'view'])->name('admin.class_bookings.view');
+//         Route::delete('/reservas/{class_bookings}/excluir', [ClassBookingController::class, 'destroy'])->name('admin.class_bookings.destroy');
+//         Route::get('/reservas/{class_bookings}/restaurar', [ClassBookingController::class, 'restore'])->name('admin.class_bookings.restore');
 
-        // Rotas de treinos
-        Route::get('/treinos', [WorkoutController::class, 'index'])->name('admin.workouts.index');
-        Route::get('/treinos/novo', [WorkoutController::class, 'create'])->name('admin.workouts.create');
-        Route::post('/treinos/novo', [WorkoutController::class, 'store'])->name('admin.workouts.store');
-        Route::get('/treinos/{workouts}/editar', [WorkoutController::class, 'edit'])->name('admin.workouts.edit');
-        Route::put('/treinos/{workouts}/editar', [WorkoutController::class, 'update'])->name('admin.workouts.update');
-        Route::get('/treinos/{workouts}/detalhes', [WorkoutController::class, 'view'])->name('admin.workouts.view');
-        Route::delete('/treinos/{workouts}/excluir', [WorkoutController::class, 'destroy'])->name('admin.workouts.destroy');
-        Route::get('/treinos/{workouts}/restaurar', [WorkoutController::class, 'restore'])->name('admin.workouts.restore');
-    });
-});
+//         // Rotas de treinos
+//         Route::get('/treinos', [WorkoutController::class, 'index'])->name('admin.workouts.index');
+//         Route::get('/treinos/novo', [WorkoutController::class, 'create'])->name('admin.workouts.create');
+//         Route::post('/treinos/novo', [WorkoutController::class, 'store'])->name('admin.workouts.store');
+//         Route::get('/treinos/{workouts}/editar', [WorkoutController::class, 'edit'])->name('admin.workouts.edit');
+//         Route::put('/treinos/{workouts}/editar', [WorkoutController::class, 'update'])->name('admin.workouts.update');
+//         Route::get('/treinos/{workouts}/detalhes', [WorkoutController::class, 'view'])->name('admin.workouts.view');
+//         Route::delete('/treinos/{workouts}/excluir', [WorkoutController::class, 'destroy'])->name('admin.workouts.destroy');
+//         Route::get('/treinos/{workouts}/restaurar', [WorkoutController::class, 'restore'])->name('admin.workouts.restore');
+//     });
+// });
 
 // Rota de seleção de estabelecimento
 Route::get('/select-establishment', [EstablishmentController::class, 'selectEstablishment'])->name('select.establishment');

@@ -1,3 +1,12 @@
+@php
+    $role = null;
+    $user = null;
+    if (Auth::guard('user')->check()) {
+        $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
+        $user = Auth::user();
+    } 
+@endphp
+
 @csrf
 <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
     @if (isset($workout))
@@ -18,6 +27,7 @@
         <input type="hidden" name="exercise_id" value="{{ $workout->exercise->id }}">
     </h2>
     @else
+    @if ($role && in_array($role->name, ['superuser']))
     <div class="w-full">
         <label for="establishment_id"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Establecimento</label>
@@ -31,6 +41,7 @@
             @endforeach
         </select>
     </div>
+    @endif
     <div class="w-full">
         <label for="user_id"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Instrutor</label>

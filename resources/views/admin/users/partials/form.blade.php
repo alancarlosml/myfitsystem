@@ -1,6 +1,17 @@
+@php
+    $role = null;
+    $user = null;
+    if (Auth::guard('user')->check()) {
+        $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
+        $user = Auth::user();
+    } 
+@endphp
+
 @csrf
 <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
-
+    @if ($role && !in_array($role->name, ['superuser']))
+    <input type="hidden" name="establishment_id" value="{{ Session::get('establishment_id') }}">
+    @endif
     <div class="sm:col-span-2">
         <label for="name"
                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nome</label>
@@ -87,8 +98,8 @@
 </div>
 <div class="mt-4 flex justify-end">
     <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md">
-        {{ isset($user) ? 'Atualizar Usuário' : 'Criar Usuário' }}
+        {{ isset($user) ? 'Atualizar Colaborador' : 'Criar Colaborador' }}
     </button>
     <a href="{{ route('admin.users.index') }}"
-       class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Cancelar</a>
+    class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Cancelar</a>
 </div>

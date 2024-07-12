@@ -9,6 +9,9 @@ use App\Models\Establishment;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+
 
 class ExerciseController extends Controller
 {
@@ -41,7 +44,7 @@ class ExerciseController extends Controller
         $categories = null;
 
         if ($this->role && !in_array($this->role->name, ['superuser'])) {
-            $establishment = Establishment::where('id', Session::get('establishment_id'))->first(); // Alterado para first()
+            $establishment = Establishment::where('id', Session::get('establishment_id'))->first(); 
             if ($establishment) {
                 $categories = $establishment->categories;
             }
@@ -56,6 +59,23 @@ class ExerciseController extends Controller
     public function store(StoreExerciseRequest $request)
     {
         $validatedData = $request->validated();
+
+        if ($request->hasFile('exercise_picture')) {
+            $file = $request->file('exercise_picture');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+    
+            $destinationPath = 'exercise_pictures';
+    
+            // Verificar se o diretório de destino existe
+            if (!Storage::disk('public')->exists($destinationPath)) {
+                Storage::disk('public')->makeDirectory($destinationPath);
+            }
+    
+            // Salvar o arquivo no diretório de destino
+            $file->storeAs($destinationPath, $fileName, 'public');
+    
+            $validatedData['exercise_picture'] = 'exercise_pictures/' . $fileName;
+        }
 
         if(isset($validatedData['active'])) {
             $validatedData['active'] = 1;
@@ -75,8 +95,18 @@ class ExerciseController extends Controller
     public function edit($exerciseId)
     {
         $exercise = Exercise::findOrFail($exerciseId);
-        $establishments = Establishment::all();
-        $categories = Category::all();
+        $establishments = null;
+        $categories = null;
+
+        if ($this->role && !in_array($this->role->name, ['superuser'])) {
+            $establishment = Establishment::where('id', Session::get('establishment_id'))->first(); 
+            if ($establishment) {
+                $categories = $establishment->categories;
+            }
+        } else {
+            $establishments = Establishment::all();
+            $categories = Category::all();
+        }
 
         return view('admin.exercises.edit', ['exercise' => $exercise, 'establishments' => $establishments, 'categories' => $categories]);
     }
@@ -86,6 +116,23 @@ class ExerciseController extends Controller
         $exercise = Exercise::findOrFail($exerciseId);
 
         $validatedData = $request->validated();
+
+        if ($request->hasFile('exercise_picture')) {
+            $file = $request->file('exercise_picture');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+    
+            $destinationPath = 'exercise_pictures';
+    
+            // Verificar se o diretório de destino existe
+            if (!Storage::disk('public')->exists($destinationPath)) {
+                Storage::disk('public')->makeDirectory($destinationPath);
+            }
+    
+            // Salvar o arquivo no diretório de destino
+            $file->storeAs($destinationPath, $fileName, 'public');
+    
+            $validatedData['exercise_picture'] = 'exercise_pictures/' . $fileName;
+        }
 
         if(isset($validatedData['active'])) {
             $validatedData['active'] = 1;
@@ -123,5 +170,21 @@ class ExerciseController extends Controller
         $exercise->restore();
 
         return redirect()->route('admin.exercises.index')->with('success', 'Exercício restaurado com sucesso.');
+    }
+
+    public function removeExercisePicture($exerciseId)
+    {
+        $exercise = Exercise::findOrFail($exerciseId);
+        $exercise->exercise_picture = null;
+        $exercise->save();
+
+        $filePath = public_path($exercise->exercise_picture);
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        return response()->json([
+            'message' => 'Imagem do exercício removida com sucesso.',
+        ]);
     }
 }

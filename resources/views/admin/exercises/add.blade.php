@@ -9,7 +9,7 @@
 
             <x-alert-error />
 
-            <form action="{{ route('admin.exercises.store') }}" method="POST">
+            <form action="{{ route('admin.exercises.store') }}" method="POST" enctype="multipart/form-data">
                 @include('admin.exercises.partials.form')
             </form>
         </div>

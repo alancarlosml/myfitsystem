@@ -29,22 +29,22 @@
         <div class="max-w-screen-xl px-4 pb-8 mx-auto lg:pb-16">
             <div
                  class="grid grid-cols-2 gap-8 text-gray-500 sm:gap-12 sm:grid-cols-3 lg:grid-cols-6 dark:text-gray-400">
-                <a href="#" class="flex items-center lg:justify-center">
+                <a href="#" class="flex justify-center lg:justify-center">
                     <img src="{{ asset('img/1.png') }}" class="h-24 hover:text-gray-900 dark:hover:text-white" alt="Parceiro 1">
                 </a>
-                <a href="#" class="flex items-center lg:justify-center">
+                <a href="#" class="flex justify-center lg:justify-center">
                     <img src="{{ asset('img/2.png') }}" class="h-24 hover:text-gray-900 dark:hover:text-white" alt="Parceiro 2">
                 </a>
-                <a href="#" class="flex items-center lg:justify-center">
+                <a href="#" class="flex justify-center lg:justify-center">
                     <img src="{{ asset('img/3.png') }}" class="h-24 hover:text-gray-900 dark:hover:text-white" alt="Parceiro 3">
                 </a>
-                <a href="#" class="flex items-center lg:justify-center">
+                <a href="#" class="flex justify-center lg:justify-center">
                     <img src="{{ asset('img/4.png') }}" class="h-24 hover:text-gray-900 dark:hover:text-white" alt="Parceiro 4">
                 </a>
-                <a href="#" class="flex items-center lg:justify-center">
+                <a href="#" class="flex justify-center lg:justify-center">
                     <img src="{{ asset('img/5.png') }}" class="h-24 hover:text-gray-900 dark:hover:text-white" alt="Parceiro 5">
                 </a>
-                <a href="#" class="flex items-center lg:justify-center">
+                <a href="#" class="flex justify-center lg:justify-center">
                     <img src="{{ asset('img/6.png') }}" class="h-24 hover:text-gray-900 dark:hover:text-white" alt="Parceiro 6">
                 </a>
             </div>

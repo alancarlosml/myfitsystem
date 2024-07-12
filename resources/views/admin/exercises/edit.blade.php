@@ -9,7 +9,7 @@
 
             <x-alert-error />   
 
-            <form action="{{ route('admin.exercises.update', $exercise->id) }}" method="POST">
+            <form action="{{ route('admin.exercises.update', $exercise->id) }}" method="POST" enctype="multipart/form-data">
                 @method('put')
                 @include('admin.exercises.partials.form')
             </form>

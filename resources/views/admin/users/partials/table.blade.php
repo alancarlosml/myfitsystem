@@ -1,3 +1,12 @@
+@php
+    $role = null;
+    $user = null;
+    if (Auth::guard('user')->check()) {
+        $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
+        $user = Auth::user();
+    } 
+@endphp
+
 <table class="w-full text-md text-left text-gray-500 dark:text-gray-400">
     <thead class="text-base text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
         <tr>
@@ -14,6 +23,11 @@
             <th scope="col" class="py-3 px-6">
                 CPF
             </th>
+            @if ($role && !in_array($role->name, ['superuser']))
+            <th scope="col" class="py-3 px-6">
+                Papel
+            </th>
+            @endif
             <th scope="col" class="py-3 px-6">
                 Email
             </th>
@@ -47,6 +61,9 @@
                     x-text="user.name">
                 </th>
                 <td class="py-4 px-6" x-text="user.cpf"></td>
+                @if ($role && !in_array($role->name, ['superuser']))
+                <td class="py-4 px-6" x-text="user.role_name"></td>
+                @endif
                 <td class="py-4 px-6" x-text="user.email"></td>
                 <td class="py-4 px-6" x-text="user.phone"></td>
                 <td class="py-4 px-6">
@@ -63,7 +80,7 @@
                         <script>
                             function viewUser(event, userId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/gestao/usuarios') }}/${userId}/detalhes`;
+                                var editUrl = `{{ url('/gestao/colaboradores') }}/${userId}/detalhes`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -74,7 +91,7 @@
                         <script>
                             function editUser(event, userId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/gestao/usuarios') }}/${userId}/editar`;
+                                var editUrl = `{{ url('/gestao/colaboradores') }}/${userId}/editar`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -105,7 +122,7 @@
                                               d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                     </svg>
                                     <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Você tem
-                                        certeza que deseja excluir esse usuário?</h3>
+                                        certeza que deseja excluir esse colaborador?</h3>
                                     <button data-modal-hide="popup-modal" x-on:click="deleteUser($event, user.id)"
                                             type="button"
                                             class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
@@ -123,7 +140,7 @@
                         function deleteUser(event, userId) {
                             event.preventDefault();
 
-                            fetch(`/usuarios/${userId}/excluir`, {
+                            fetch(`/gestao/colaboradores/${userId}/excluir`, {
                                     method: 'DELETE',
                                     headers: {
                                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -134,12 +151,12 @@
                                     if (response.ok) {
                                         window.location.href = '{{ route('admin.users.index') }}';
                                     } else {
-                                        alert('Ocorreu um erro ao excluir o usuário.');
+                                        alert('Ocorreu um erro ao excluir o colaborador.');
                                     }
                                 })
                                 .catch(error => {
                                     console.error('Erro:', error);
-                                    alert('Ocorreu um erro ao excluir o usuário.');
+                                    alert('Ocorreu um erro ao excluir o colaborador.');
                                 });
                         }
                     </script>

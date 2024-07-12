@@ -7,13 +7,32 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
+    protected $role;
+
+    public function __construct()
+    {
+        $this->role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
+    }
+
     public function index()
     {
-        $users = User::all();
+        $query = User::select('users.*')
+                          ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+                          ->leftJoin('establishments', 'establishments.id', '=', 'role_user.establishment_id')
+                          ->orderBy('establishments.name');
+
+        if ($this->role && !in_array($this->role->name, ['superuser'])){
+            $query->select('users.*', 'roles.name as role_name')
+                  ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
+                  ->where('establishments.id', Session::get('establishment_id'));
+        }
+
+        $users = $query->get();
         return view('admin.users.index', ['users' => $users]);
     }
 
@@ -35,9 +54,13 @@ class UserController extends Controller
             $validatedData['active'] = 0;
         }
 
+        if ($this->role && !in_array($this->role->name, ['superuser'])){
+            $validatedData['establishment_id'] = Session::get('establishment_id');
+        }
+
         User::create($validatedData);
 
-        return redirect()->route('admin.users.index')->with('success', 'Usuário criado com sucesso!');
+        return redirect()->route('admin.users.index')->with('success', 'Colaborador criado com sucesso!');
     }
 
     public function edit($user)
@@ -61,9 +84,13 @@ class UserController extends Controller
             $validatedData['active'] = 0;
         }
 
+        if ($this->role && !in_array($this->role->name, ['superuser'])){
+            $validatedData['establishment_id'] = Session::get('establishment_id');
+        }
+
         $user->update($validatedData);
 
-        return redirect()->route('admin.users.index')->with('success', 'Usuário atualizado com sucesso!');
+        return redirect()->route('admin.users.index')->with('success', 'Colaborador atualizado com sucesso!');
     }
 
     public function view($userId)
@@ -86,7 +113,7 @@ class UserController extends Controller
         $user = User::withTrashed()->findOrFail($userId);
         $user->restore();
 
-        return redirect()->route('admin.users.index')->with('success', 'Usuário restaurado com sucesso.');
+        return redirect()->route('admin.users.index')->with('success', 'Colaborador restaurado com sucesso.');
     }
 
     public function linkEstablishment(Request $request, $userId)

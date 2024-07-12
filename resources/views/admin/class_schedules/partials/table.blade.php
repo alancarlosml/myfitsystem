@@ -1,3 +1,12 @@
+@php
+    $role = null;
+    $user = null;
+    if (Auth::guard('user')->check()) {
+        $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
+        $user = Auth::user();
+    } 
+@endphp
+
 <table class="w-full text-md text-left text-gray-500 dark:text-gray-400">
     <thead class="text-base text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
         <tr>
@@ -8,9 +17,11 @@
                     <label for="checkbox-all-search" class="sr-only">checkbox</label>
                 </div>
             </th>
+            @if ($role && in_array($role->name, ['superuser']))
             <th scope="col" class="py-3 px-6">
                 Estabelecimento
             </th>
+            @endif
             <th scope="col" class="py-3 px-6">
                 Modalidade
             </th>
@@ -44,10 +55,12 @@
                             :checked="selectAll"> <label :for="`checkbox-table-search-` + class_schedule.id" class="sr-only">checkbox</label>
                     </div>
                 </td>
+                @if ($role && in_array($role->name, ['superuser']))
                 <td scope="row"
                     class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     x-text="class_schedule.establishment.name">
                 </td>
+                @endif
                 <td scope="row"
                     class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     x-text="class_schedule.modality.name">
@@ -74,7 +87,7 @@
                         <script>
                             function viewClassSchedule(event, class_scheduleId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/aulas') }}/${class_scheduleId}/detalhes`;
+                                var editUrl = `{{ url('/gestao/aulas') }}/${class_scheduleId}/detalhes`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -85,7 +98,7 @@
                         <script>
                             function editClassSchedule(event, class_scheduleId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/aulas') }}/${class_scheduleId}/editar`;
+                                var editUrl = `{{ url('/gestao/aulas') }}/${class_scheduleId}/editar`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -119,24 +132,24 @@
                         function deleteClassSchedule(event, class_scheduleId) {
                             event.preventDefault();
             
-                            fetch(`/aulas/${class_scheduleId}/excluir`, {
+                            fetch(`/gestao/aulas/${class_scheduleId}/excluir`, {
                                     method: 'DELETE',
                                     headers: {
                                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                         'Content-Type': 'application/json'
-                                    }
-                                })
-                                .then(response => {
-                                    if (response.ok) {
-                                        window.location.href = '{{ route('admin.class_schedules.index') }}';
-                                    } else {
-                                        alert('Ocorreu um erro ao excluir a aula.');
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Erro:', error);
+                                }
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    window.location.href = '{{ route('admin.class_schedules.index') }}';
+                                } else {
                                     alert('Ocorreu um erro ao excluir a aula.');
-                                });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erro:', error);
+                                alert('Ocorreu um erro ao excluir a aula.');
+                            });
                         }
                     </script>
                 </td>

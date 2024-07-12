@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-header>
-        <x-slot:title>Usuários</x-slot:title>
+        <x-slot:title>Colaboradores</x-slot:title>
     </x-header>
 
     @if (session('success'))

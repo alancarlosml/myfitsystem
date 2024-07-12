@@ -1,3 +1,12 @@
+@php
+    $role = null;
+    $user = null;
+    if (Auth::guard('user')->check()) {
+        $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
+        $user = Auth::user();
+    } 
+@endphp
+
 <table class="w-full text-md text-left text-gray-500 dark:text-gray-400">
     <thead class="text-base text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
         <tr>
@@ -8,9 +17,11 @@
                     <label for="checkbox-all-search" class="sr-only">checkbox</label>
                 </div>
             </th>
+            @if ($role && in_array($role->name, ['superuser']))
             <th scope="col" class="py-3 px-6">
                 Estabelecimento
             </th>
+            @endif
             <th scope="col" class="py-3 px-6">
                 Instrutor
             </th>
@@ -50,10 +61,12 @@
                             :checked="selectAll"> <label :for="`checkbox-table-search-` + workout.id" class="sr-only">checkbox</label>
                     </div>
                 </td>
+                @if ($role && in_array($role->name, ['superuser']))
                 <td scope="row"
                     class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     x-text="workout.establishment.name">
                 </td>
+                @endif
                 <td scope="row"
                     class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     x-text="workout.user.name">

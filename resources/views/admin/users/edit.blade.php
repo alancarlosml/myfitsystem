@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-header>
-        <x-slot:title>Usuários</x-slot:title>
+        <x-slot:title>Colaboradores</x-slot:title>
     </x-header>
 
     <section class="bg-white dark:bg-gray-900">
         <div class="py-8 px-4 mx-auto max-w-4xl lg:py-16">
-            <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Editar Usuário</h2>
+            <h2 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Editar Colaborador</h2>
 
             <x-alert-error />
 
