@@ -57,4 +57,10 @@ class ClassSchedule extends Model
     {
         return $this->hasMany(ClassBooking::class);
     }
+
+    protected $casts = [
+        'class_date' => 'date',
+        'start_time' => 'datetime:H:i:s',
+        'end_time' => 'datetime:H:i:s',
+    ];
 }

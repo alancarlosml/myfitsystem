@@ -32,15 +32,6 @@
                 treino
             </th>
             <th scope="col" class="py-3 px-6">
-                Séries
-            </th>
-            <th scope="col" class="py-3 px-6">
-                Repetições
-            </th>
-            <th scope="col" class="py-3 px-6">
-                Tempo de descanso
-            </th>
-            <th scope="col" class="py-3 px-6">
                 Status
             </th>
             <th scope="col" class="py-3 px-6">
@@ -68,28 +59,16 @@
                 </td>
                 @endif
                 <td scope="row"
-                    class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    class="py-4 px-6 font-normal text-gray-900 whitespace-nowrap dark:text-white"
                     x-text="workout.user.name">
                 </td>
                 <td scope="row"
-                    class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    class="py-4 px-6 font-normal text-gray-900 whitespace-nowrap dark:text-white"
                     x-text="workout.student.name">
                 </td>
                 <td scope="row"
-                    class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    class="py-4 px-6 font-normal text-gray-900 whitespace-nowrap dark:text-white"
                     x-text="workout.exercise.name">
-                </td>
-                <td scope="row"
-                    class="py-4 px-6"
-                    x-text="workout.sets">
-                </td>
-                <td scope="row"
-                    class="py-4 px-6"
-                    x-text="workout.repetitions">
-                </td>
-                <td scope="row"
-                    class="py-4 px-6"
-                    x-text="workout.rest_time">
                 </td>
                 <td class="py-4 px-6">
                     <div class="flex items-center">
@@ -103,7 +82,7 @@
                         <script>
                             function viewWorkout(event, workoutId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/treinos') }}/${workoutId}/detalhes`;
+                                var editUrl = `{{ url('/gestao/treinos') }}/${workoutId}/detalhes`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -114,7 +93,7 @@
                         <script>
                             function editWorkout(event, workoutId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/treinos') }}/${workoutId}/editar`;
+                                var editUrl = `{{ url('/gestao/treinos') }}/${workoutId}/editar`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -148,7 +127,7 @@
                         function deleteWorkout(event, workoutId) {
                             event.preventDefault();
             
-                            fetch(`/treinos/${workoutId}/excluir`, {
+                            fetch(`/gestao/treinos/${workoutId}/excluir`, {
                                     method: 'DELETE',
                                     headers: {
                                         'X-CSRF-TOKEN': '{{ csrf_token() }}',

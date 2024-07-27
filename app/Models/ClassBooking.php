@@ -14,7 +14,6 @@ class ClassBooking extends Model
         'class_schedule_id',
         'booking_date',
         'checked_in',
-        // Adicione mais campos conforme necessário
     ];
 
     public function student()
@@ -26,4 +25,5 @@ class ClassBooking extends Model
     {
         return $this->belongsTo(ClassSchedule::class);
     }
+
 }

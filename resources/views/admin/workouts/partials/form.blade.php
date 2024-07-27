@@ -41,6 +41,8 @@
             @endforeach
         </select>
     </div>
+    @else
+    <input type="hidden" name="establishment_id" value="{{ Session::get('establishment_id') }}">
     @endif
     <div class="w-full">
         <label for="user_id"
@@ -68,7 +70,7 @@
             @endforeach
         </select>
     </div>
-    <div class="w-full">
+    <div class="@if ($role && in_array($role->name, ['superuser'])) w-full @else sm:col-span-2 @endif">
         <label for="exercise_id"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Treino</label>
         <select id="exercise_id" name="exercise_id"
