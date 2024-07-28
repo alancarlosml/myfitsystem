@@ -4,38 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreModalityRequest;
 use App\Http\Requests\UpdateModalityRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use App\Models\Modality;
 
 class ModalityController extends Controller
 {
-    protected $role;
-    public function __construct()
-    {
-        $this->role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
-    }
-
     public function index()
     {
-        $query = \App\Models\Modality::select('modalities.*')
-                                      ->leftJoin('establishments', 'modalities.establishment_id', '=', 'establishments.id')
-                                      ->orderBy('establishments.name')
-                                      ->with('establishment');
-
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $query->where('establishments.id', Session::get('establishment_id'));
-        }
-
-        $modalities = $query->get();
+        $modalities = Modality::select('modalities.*')
+                           ->orderBy('modalities.name')->get();
                                       
         return view('admin.modalities.index', ['modalities' => $modalities]);
     }
 
     public function create()
     {
-        $establishments = \App\Models\Establishment::all();
-
-        return view('admin.modalities.add', ['establishments'=> $establishments]);
+        return view('admin.modalities.add');
     }
 
     public function store(StoreModalityRequest $request)
@@ -48,25 +31,21 @@ class ModalityController extends Controller
             $validatedData['active'] = 0;
         }
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $validatedData['establishment_id'] = Session::get('establishment_id');
-        }
-
-        \App\Models\Modality::create($validatedData);
+        Modality::create($validatedData);
 
         return redirect()->route('admin.modalities.index')->with('success', 'Modalidade criada com sucesso!');
     }
 
     public function edit($modality)
     {
-        $modality = \App\Models\Modality::find($modality);
+        $modality = Modality::find($modality);
 
         return view('admin.modalities.edit', ['modality' => $modality]);
     }
 
     public function update(UpdateModalityRequest $request, $modalityId)
     {
-        $modality = \App\Models\Modality::findOrFail($modalityId);
+        $modality = Modality::findOrFail($modalityId);
 
         $validatedData = $request->validated();
 
@@ -76,10 +55,6 @@ class ModalityController extends Controller
             $validatedData['active'] = 0;
         }
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $validatedData['establishment_id'] = Session::get('establishment_id');
-        }
-
         $modality->update($validatedData);
 
         return redirect()->route('admin.modalities.index')->with('success', 'Modalidade atualizada com sucesso!');
@@ -87,20 +62,20 @@ class ModalityController extends Controller
 
     public function view($modalityId)
     {
-        $modality = \App\Models\Modality::findOrFail($modalityId);
+        $modality = Modality::findOrFail($modalityId);
         
         return view('admin.modalities.view', ['modality' => $modality]);
     }
 
     public function destroy($modalityId)
     {
-        $modality = \App\Models\Modality::findOrFail($modalityId);
+        $modality = Modality::findOrFail($modalityId);
         $modality->delete();
     }
 
     public function restore($modalityId)
     {
-        $modality = \App\Models\Modality::withTrashed()->findOrFail($modalityId);
+        $modality = Modality::withTrashed()->findOrFail($modalityId);
         $modality->restore();
 
         return redirect()->route('admin.modalities.index')->with('success', 'Modalidade restaurada com sucesso.');

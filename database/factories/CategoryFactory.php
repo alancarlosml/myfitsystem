@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Category;
-use App\Models\Establishment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CategoryFactory extends Factory
@@ -23,7 +22,6 @@ class CategoryFactory extends Factory
     public function definition()
     {
         return [
-            'establishment_id' => Establishment::all()->random()->id,
             'name' => $this->faker->word,
             'description' => $this->faker->sentence,
             'active' => $this->faker->boolean(80), // 80% chance of being active

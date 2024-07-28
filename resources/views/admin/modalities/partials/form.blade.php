@@ -1,38 +1,5 @@
-@php
-    $role = null;
-    $user = null;
-    if (Auth::guard('user')->check()) {
-        $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
-        $user = Auth::user();
-    } 
-@endphp
-
 @csrf
 <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
-    @if ($role && in_array($role->name, ['superuser']))
-        @if (isset($modality))
-        <h2 class="text-4xl font-extrabold dark:text-white">
-            <small class="font-semibold text-gray-500 dark:text-gray-400">{{$modality->establishment->name}}</small>
-            <input type="hidden" name="establishment_id" value="{{ $modality->establishment->id }}">
-        </h2>
-        @else
-        <div class="sm:col-span-2">
-            <label for="establishment_id"
-                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Establecimento</label>
-            <select id="type" name="establishment_id"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                <option selected="">Selecione</option>
-                @foreach ($establishments as $establishment)
-                    <option value="{{ $establishment->id }}" {{ old('establishment_id') == $establishment->id ? 'selected' : '' }}>
-                        {{ $establishment->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        @endif
-    @else
-        <input type="hidden" name="establishment_id" value="{{ Session::get('establishment_id') }}">
-    @endif
     <div class="sm:col-span-2">
         <label for="name"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nome</label>

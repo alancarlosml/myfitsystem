@@ -30,21 +30,21 @@
                             <label for="class_date"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Data aula</label>
                             <span class="text-gray-900 dark:text-white">
-                                {{ $class_schedule->class_date }}
+                                {{ \Carbon\Carbon::parse($class_schedule->class_date)->format('d/m/Y') }}
                             </span>
                         </div>
                         <div class="sm:col-span-2">
                             <label for="start_time"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Início aula</label>
                             <span class="text-gray-900 dark:text-white">
-                                {{ $class_schedule->start_time }}
+                                {{ \Carbon\Carbon::parse($class_schedule->start_time)->format('H:i') }}
                             </span>
                         </div>
                         <div class="sm:col-span-2">
                             <label for="end_time"
                                     class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fim aula</label>
                             <span class="text-gray-900 dark:text-white">
-                                {{ $class_schedule->end_time }}
+                                {{ \Carbon\Carbon::parse($class_schedule->end_time)->format('H:i') }}
                             </span>
                         </div>
                     </div>

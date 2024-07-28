@@ -20,10 +20,6 @@
     @endpush
     @push('footer')
         <script>
-            const datepickerEl = document.getElementById('birthdate');
-            new Datepicker(datepickerEl, {
-                // options
-            }); 
         </script>
     @endpush
 

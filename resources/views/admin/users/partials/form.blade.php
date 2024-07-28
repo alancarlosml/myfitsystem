@@ -1,9 +1,7 @@
 @php
     $role = null;
-    $user = null;
     if (Auth::guard('user')->check()) {
         $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
-        $user = Auth::user();
     } 
 @endphp
 

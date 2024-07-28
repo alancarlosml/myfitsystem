@@ -1,24 +1,10 @@
-@php
-    $role = null;
-    $user = null;
-    if (Auth::guard('user')->check()) {
-        $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
-        $user = Auth::user();
-    } 
-@endphp
-
 <x-app-layout>
     <x-header>
-        <x-slot:title>Modalidade - Detalhes</x-slot:title>
+        <x-slot:title>Modalidade</x-slot:title>
     </x-header>
 
     <section class="bg-white dark:bg-gray-900">
         <div class="py-8 mx-full">
-            @if ($role && in_array($role->name, ['superuser']))
-            <h2 class="text-4xl font-extrabold dark:text-white">
-                <small class="font-semibold text-gray-500 dark:text-gray-400">{{$modality->establishment->name}}</small>
-            </h2>
-            @endif
             <div class="py-8 mx-auto w-full">
                 <div class="mx-auto">
                     <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">

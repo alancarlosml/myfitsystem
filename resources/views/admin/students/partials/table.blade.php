@@ -51,7 +51,7 @@
                 </th>
                 <td class="py-4 px-6" x-text="student.cpf"></td>
                 <td class="py-4 px-6" x-text="student.email"></td>
-                <td class="py-4 px-6" x-text="student.birthdate"></td>
+                <td class="py-4 px-6" x-data="{ formattedDate: (new Date(student.birthdate)).toLocaleDateString('pt-BR') }" x-text="formattedDate"></td>
                 <td class="py-4 px-6"
                     x-text="student.gender === 'masculino' ? 'Masculino' : (student.type === 'feminino' ? 'Feminino' : 'Outro')">
                 </td>

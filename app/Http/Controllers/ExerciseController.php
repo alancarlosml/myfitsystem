@@ -27,6 +27,7 @@ class ExerciseController extends Controller
                              ->leftJoin('establishments', 'exercises.establishment_id', '=', 'establishments.id')
                              ->leftJoin('categories', 'exercises.category_id', '=', 'categories.id')
                              ->orderBy('establishments.name')
+                             ->orderBy('categories.name')
                              ->with(['establishment', 'category']);
         
         if ($this->role && !in_array($this->role->name, ['superuser'])){

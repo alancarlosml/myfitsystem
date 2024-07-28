@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Establishment;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -22,14 +23,14 @@ class UserController extends Controller
     public function index()
     {
         $query = User::select('users.*')
-                          ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
-                          ->leftJoin('establishments', 'establishments.id', '=', 'role_user.establishment_id')
-                          ->orderBy('establishments.name');
+                          ->orderBy('users.name');
 
         if ($this->role && !in_array($this->role->name, ['superuser'])){
             $query->select('users.*', 'roles.name as role_name')
-                  ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
-                  ->where('establishments.id', Session::get('establishment_id'));
+                    ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+                    ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
+                    ->leftJoin('establishments', 'establishments.id', '=', 'role_user.establishment_id')
+                    ->where('establishments.id', Session::get('establishment_id'));
         }
 
         $users = $query->get();
@@ -38,7 +39,7 @@ class UserController extends Controller
 
     public function create()
     {
-        $establishments = \App\Models\Establishment::all();
+        $establishments = Establishment::all();
         $roles = Role::where('name', '!=', 'superuser')->get();
 
         return view('admin.users.add', ['establishments' => $establishments, 'roles'=> $roles]);
@@ -66,7 +67,7 @@ class UserController extends Controller
     public function edit($user)
     {
         $user = User::with('establishments')->find($user);
-        $establishments = \App\Models\Establishment::all();
+        $establishments = Establishment::all();
         $roles = Role::where('name', '!=', 'superuser')->get();
 
         return view('admin.users.edit', ['user' => $user, 'establishments' => $establishments, 'roles' => $roles]);
@@ -96,7 +97,7 @@ class UserController extends Controller
     public function view($userId)
     {
         $user = User::findOrFail($userId);
-        $establishments = \App\Models\Establishment::all();
+        $establishments = Establishment::all();
         $roles = Role::where('name', '!=', 'superuser')->get();
         
         return view('admin.users.view', ['user' => $user, 'establishments' => $establishments, 'roles' => $roles]);

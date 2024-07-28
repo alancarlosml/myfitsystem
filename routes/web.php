@@ -64,9 +64,6 @@ Route::prefix('gestao')->group(function () {
             Route::post('/estabelecimentos/{establishment}/contratos/novo', [EstablishmentController::class, 'contractStore'])->name('admin.establishments.contracts.store');
             Route::delete('/estabelecimentos/{establishment}/excluir', [EstablishmentController::class, 'destroy'])->name('admin.establishments.destroy');
             Route::get('/estabelecimentos/{establishment}/restaurar', [EstablishmentController::class, 'restore'])->name('admin.establishments.restore');
-        });
-
-        Route::middleware(['role.establishment:admin,superuser'])->group(function () {
 
             // Rotas de categorias
             Route::get('/categorias', [CategoryController::class, 'index'])->name('admin.categories.index');
@@ -77,6 +74,20 @@ Route::prefix('gestao')->group(function () {
             Route::get('/categorias/{category}/detalhes', [CategoryController::class, 'view'])->name('admin.categories.view');
             Route::delete('/categorias/{category}/excluir', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
             Route::get('/categorias/{category}/restaurar', [CategoryController::class, 'restore'])->name('admin.categories.restore');
+
+            // Rotas de modalidades
+            Route::get('/modalidades', [ModalityController::class, 'index'])->name('admin.modalities.index');
+            Route::get('/modalidades/novo', [ModalityController::class, 'create'])->name('admin.modalities.create');
+            Route::post('/modalidades/novo', [ModalityController::class, 'store'])->name('admin.modalities.store');
+            Route::get('/modalidades/{modality}/editar', [ModalityController::class, 'edit'])->name('admin.modalities.edit');
+            Route::put('/modalidades/{modality}/editar', [ModalityController::class, 'update'])->name('admin.modalities.update');
+            Route::get('/modalidades/{modality}/detalhes', [ModalityController::class, 'view'])->name('admin.modalities.view');
+            Route::delete('/modalidades/{modality}/excluir', [ModalityController::class, 'destroy'])->name('admin.modalities.destroy');
+            Route::get('/modalidades/{modality}/restaurar', [ModalityController::class, 'restore'])->name('admin.modalities.restore');
+
+        });
+
+        Route::middleware(['role.establishment:admin,superuser'])->group(function () {
 
             // Rotas de alunos
             Route::get('/alunos', [StudentController::class, 'index'])->name('admin.students.index');
@@ -102,16 +113,6 @@ Route::prefix('gestao')->group(function () {
             Route::post('/colaboradores/{user}/vincular', [UserController::class, 'linkEstablishment'])->name('admin.users.establishments.store');
             Route::put('/colaboradores/{user}/vincular/editar', [UserController::class, 'updateLinkEstablishment'])->name('admin.users.establishments.update');
             Route::get('/colaboradores/{user}/desvincular/{establishment}', [UserController::class, 'unlinkEstablishment'])->name('admin.users.establishments.destroy');
-
-            // Rotas de modalidades
-            Route::get('/modalidades', [ModalityController::class, 'index'])->name('admin.modalities.index');
-            Route::get('/modalidades/novo', [ModalityController::class, 'create'])->name('admin.modalities.create');
-            Route::post('/modalidades/novo', [ModalityController::class, 'store'])->name('admin.modalities.store');
-            Route::get('/modalidades/{modality}/editar', [ModalityController::class, 'edit'])->name('admin.modalities.edit');
-            Route::put('/modalidades/{modality}/editar', [ModalityController::class, 'update'])->name('admin.modalities.update');
-            Route::get('/modalidades/{modality}/detalhes', [ModalityController::class, 'view'])->name('admin.modalities.view');
-            Route::delete('/modalidades/{modality}/excluir', [ModalityController::class, 'destroy'])->name('admin.modalities.destroy');
-            Route::get('/modalidades/{modality}/restaurar', [ModalityController::class, 'restore'])->name('admin.modalities.restore');
 
             // Rotas de exercicios
             Route::get('/exercicios', [ExerciseController::class, 'index'])->name('admin.exercises.index');

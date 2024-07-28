@@ -11,14 +11,9 @@ class Category extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'establishment_id',
         'name',
         'description',
         'active',
     ];
 
-    public function establishment()
-    {
-        return $this->belongsTo(Establishment::class);
-    }
 }

@@ -219,7 +219,6 @@
                                             <th scope="col" class="p-4">
                                                 <div class="flex items-center">
                                                     <input id="checkbox-all-search" type="checkbox"
-                                                           x-model="selectAll"
                                                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                                     <label for="checkbox-all-search" class="sr-only">checkbox</label>
                                                 </div>
@@ -266,7 +265,7 @@
                                                     {{ $establishment->name }}
                                                 </th>
                                                 <td class="py-4 px-6">
-                                                    {{ ucfirst($user->roles->where('pivot.establishment_id', $establishment->id)->first()->role) }}
+                                                    {{ ucfirst($user->roles->where('pivot.establishment_id', $establishment->id)->first()->name) }}
                                                 </td>
                                                 <td class="py-4 px-6">
                                                     {{ \Carbon\Carbon::parse($establishment->created_at)->format('d/m/Y') }}
@@ -355,6 +354,73 @@
                                                     </div>
                                                 </td>
                                             </tr>
+                                            {{-- início modal edição vinculação usuario-estabelecimento --}}
+
+                                            <div id="defaultModalEdit" tabindex="-1" aria-hidden="true"
+                                            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+                                                <div class="relative p-4 w-full max-w-xl h-full md:h-auto">
+                                                    <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+                                                        <div
+                                                                class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                                                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                                                Editar papel do colaborador
+                                                            </h3>
+                                                            <button type="button"
+                                                                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                                                    data-modal-toggle="defaultModalEdit">
+                                                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor"
+                                                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path fill-rule="evenodd"
+                                                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                            clip-rule="evenodd"></path>
+                                                                </svg>
+                                                                <span class="sr-only">Close modal</span>
+                                                            </button>
+                                                        </div>
+                                                        <form action="{{ route('admin.users.establishments.update', $user) }}"
+                                                                method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <div class="mb-4">
+                                                                <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                                                <input type="hidden" name="establishment_id" value="{{ $establishment->id }}">
+                                                                <div class="mb-2">
+                                                                    <label for="role_id"
+                                                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Papel</label>
+                                                                    <select id="role_id" name="role_id"
+                                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                                                        <option selected="">Selecione</option>
+                                                                        @foreach ($roles as $role)
+                                                                            <option value="{{ $role->id }}"
+                                                                                    @if (old('role_id', $user->roles->where('pivot.establishment_id', $establishment->id)->first()->id) == $role->id) selected @endif>
+                                                                                {{ ucfirst($role->name) }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                                <div class="sm:col-span-2">
+                                                                    <label class="inline-flex items-center cursor-pointer">
+                                                                        {{-- mudar, adicionar o activer do user_role --}}
+                                                                        <input type="checkbox" value="1" class="sr-only peer"
+                                                                                name="active"
+                                                                                {{ old('active', $user->active ?? false) ? 'checked' : '' }}>
+                                                                        <div
+                                                                                class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                                                                        </div>
+                                                                        <span
+                                                                                class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Ativo</span>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <button type="submit"
+                                                                    class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md">
+                                                                Salvar
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {{-- fim modal editar vinculação usuario-estabelecimento --}}
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -420,75 +486,6 @@
                     </div>
                 </div>
             </div>
-
-            {{-- início modal edição vinculação usuario-estabelecimento --}}
-
-            <div id="defaultModalEdit" tabindex="-1" aria-hidden="true"
-                 class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
-                <div class="relative p-4 w-full max-w-2xl h-full md:h-auto">
-                    <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-                        <div
-                             class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                Editar papel do colaborador
-                            </h3>
-                            <button type="button"
-                                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                                    data-modal-toggle="defaultModalEdit">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor"
-                                     viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                          clip-rule="evenodd"></path>
-                                </svg>
-                                <span class="sr-only">Close modal</span>
-                            </button>
-                        </div>
-                        <form action="{{ route('admin.users.establishments.update', $user) }}"
-                              method="POST">
-                            @csrf
-                            @method('PUT')
-                            <div class="grid gap-4 mb-4 sm:grid-cols-2">
-                                <input type="hidden" name="user_id" value="{{ $user->id }}">
-                                <input type="hidden" name="establishment_id" value="{{ $establishment->id }}">
-                                <div>
-                                    <label for="role_id"
-                                           class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Papel</label>
-                                    <select id="role_id" name="role_id"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                        <option selected="">Selecione</option>
-                                        @foreach ($roles as $role)
-                                            <option value="{{ $role->id }}"
-                                                    @if (old('role_id', $user->roles->where('pivot.establishment_id', $establishment->id)->first()->id) == $role->id) selected @endif>
-                                                {{ ucfirst($role->role) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="sm:col-span-2">
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        {{-- mudar, adicionar o activer do user_role --}}
-                                        <input type="checkbox" value="1" class="sr-only peer"
-                                               name="active"
-                                               {{ old('active', $user->active ?? false) ? 'checked' : '' }}>
-                                        <div
-                                             class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                                        </div>
-                                        <span
-                                              class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Ativo</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <button type="submit"
-                                    class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md">
-                                Salvar
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            {{-- fim modal editar vinculação usuario-estabelecimento --}}
 
             <div class="mt-4 flex justify-end">
                 <a href="{{ route('admin.users.index') }}"

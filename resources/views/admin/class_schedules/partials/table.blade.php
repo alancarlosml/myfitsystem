@@ -71,15 +71,18 @@
                 </td>
                 <td scope="row"
                     class="py-4 px-5"
-                    x-text="class_schedule.class_date">
+                    x-data="{ formattedDate: (new Date(class_schedule.class_date)).toLocaleDateString('pt-BR') }"
+                    x-text="formattedDate">
                 </td>
                 <td scope="row"
                     class="py-4 px-6"
-                    x-text="class_schedule.start_time">
+                    x-data="{ formattedTime: (new Date('1970-01-01T' + class_schedule.start_time)).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) }" 
+                    x-text="formattedTime">
                 </td>
                 <td scope="row"
                     class="py-4 px-6"
-                    x-text="class_schedule.end_time">
+                    x-data="{ formattedTime: (new Date('1970-01-01T' + class_schedule.end_time)).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) }" 
+                    x-text="formattedTime">
                 </td>
                 <td class="px-6 py-4 flex items-center">
                     <a href="#" x-on:click="viewClassSchedule($event, class_schedule.id)" class="font-medium mr-3 text-green-600 dark:text-green-500 hover:underline">Detalhes</a>
@@ -87,7 +90,7 @@
                         <script>
                             function viewClassSchedule(event, class_scheduleId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/gestao/aulas') }}/${class_scheduleId}/detalhes`;
+                                var editUrl = `{{ url('/gestao/agendamento-aulas') }}/${class_scheduleId}/detalhes`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -98,7 +101,7 @@
                         <script>
                             function editClassSchedule(event, class_scheduleId) {
                                 event.preventDefault();
-                                var editUrl = `{{ url('/gestao/aulas') }}/${class_scheduleId}/editar`;
+                                var editUrl = `{{ url('/gestao/agendamento-aulas') }}/${class_scheduleId}/editar`;
                                 window.location.href = editUrl;
                             }
                         </script>
@@ -132,7 +135,7 @@
                         function deleteClassSchedule(event, class_scheduleId) {
                             event.preventDefault();
             
-                            fetch(`/gestao/aulas/${class_scheduleId}/excluir`, {
+                            fetch(`/gestao/agendamento-aulas/${class_scheduleId}/excluir`, {
                                     method: 'DELETE',
                                     headers: {
                                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
