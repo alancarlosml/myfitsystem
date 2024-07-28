@@ -8,24 +8,11 @@
             <div class="grid gap-8 lg:grid-cols-2">
                 @foreach($establishments as $establishment)
                 <article class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-                    {{-- <div class="flex justify-between items-center mb-5 text-gray-500">
-                        <span class="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
-                            @foreach($establishment->roles as $role)
-                                <p class="mb-5 font-light text-gray-500 dark:text-gray-400">Papel: {{ $role->pivot->role_id }}</p>
-                            @endforeach
-                        </span>
-                    </div> --}}
-                    <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ $establishment->name }}</h2>
+                    <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        {{ $establishment->name }}
+                    </h2>
                     <p class="mb-5 font-light text-gray-500 dark:text-gray-400">
-                        @if ($establishment->type == 'academia')
-                            {{ 'Academia' }}
-                        @elseif ($establishment->type == 'crossfit')
-                            {{ 'Crossfit' }}
-                        @elseif ($establishment->type == 'personal_trainer')
-                            {{ 'Personal trainer' }}
-                        @else
-                            {{'Estabelecimento não identificado'}}
-                        @endif
+                        {{ ucfirst($establishment->role_name) }}
                     </p>
                     <div class="flex justify-between items-center">
                         <form action="{{ route('store.establishment') }}" method="POST">
@@ -41,7 +28,7 @@
                     </div>
                 </article> 
                 @endforeach
-            </div>  
+            </div>
         </div>
     </section>
 </x-guest-layout>

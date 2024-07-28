@@ -5,6 +5,17 @@
         $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
         $user = Auth::user();
     } 
+    $date = new DateTime();
+    $formatter = new IntlDateFormatter(
+    'pt_BR',
+        IntlDateFormatter::FULL,
+        IntlDateFormatter::NONE,
+        'America/Sao_Paulo',          
+        IntlDateFormatter::GREGORIAN
+    );
+
+    $monthName = $formatter->format($date);
+    $monthName = explode(' ', $monthName)[3];
 @endphp
 
 <x-app-layout>
@@ -16,31 +27,31 @@
         @if ($role && in_array($role->name, ['superuser']))
         <x-card>
             <x-slot:title>Estabelecimentos ativos</x-slot:title>
-            59
+            {{$establishments_active}}
         </x-card>
         <x-card>
             <x-slot:title>Estabelecimentos inativos</x-slot:title>
-            12
+            {{$establishments_inactive}}
         </x-card>
         @endif
         @if ($role && in_array($role->name, ['admin']))
         <x-card>
             <x-slot:title>Alunos ativos</x-slot:title>
-            59
+            {{$students_active}}
         </x-card>
         <x-card>
             <x-slot:title>Alunos inativos</x-slot:title>
-            12
+            {{$students_inactive}}
         </x-card>
         @endif
         @if ($role && in_array($role->name, ['superuser','admin']))
         <x-card>
-            <x-slot:title>Total em Julho</x-slot:title>
-            R$ 13.430,98
+            <x-slot:title>Total em {{ucfirst($monthName)}}</x-slot:title>
+            R$ {{$total_mes}}
         </x-card>
         <x-card>
             <x-slot:title>Total em {{ date('Y') }}</x-slot:title>
-            R$ 73.430,98
+            R$ {{$total_ano}}
         </x-card>
         @endif
     </section>

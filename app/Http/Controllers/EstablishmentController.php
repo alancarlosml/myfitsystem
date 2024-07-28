@@ -147,13 +147,20 @@ class EstablishmentController extends Controller
         $guard = Auth::guard('user')->check() ? 'user' : 'student';
         $user = Auth::guard($guard)->user();
         $establishments = [];
+        
         if($guard == 'user') {
             $establishments = $user->getEstablishmentsActive()->with('roles')->get();
         } else {
             $student = Student::where('id', $user->id)->first();
             $establishments = $student->establishments()->get();
         }
-        
+
+        // Para cada estabelecimento, obtenha o papel do usuário
+        foreach ($establishments as $establishment) {
+            $role = $user->getRoleForEstablishment($establishment->id);
+            $establishment->role_name = $role ? $role->name : 'Nenhum papel';
+        }
+
         return view('auth.select-establishment', compact('establishments'));
     }
 

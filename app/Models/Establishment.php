@@ -67,7 +67,7 @@ class Establishment extends Model
     public function roles()
     {
         return $this->belongsToMany(User::class, 'role_user')
-                    ->withPivot('role_id') // Carregar o role_id da tabela pivot
+                    ->withPivot('role_id')
                     ->withTimestamps();
     }
 }
