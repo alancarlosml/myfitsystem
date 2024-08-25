@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreModalityRequest;
 use App\Http\Requests\UpdateModalityRequest;
+use App\Models\Establishment;
 use App\Models\Modality;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class ModalityController extends Controller
 {
@@ -12,8 +15,14 @@ class ModalityController extends Controller
     {
         $modalities = Modality::select('modalities.*')
                            ->orderBy('modalities.name')->get();
+
+        $modalities_admin = Modality::select('modalities.*')
+                            ->where('active', 1)
+                            ->orderBy('modalities.name')->get();
+                       
+       $establishment = Establishment::with('modalities')->findOrFail(Session::get('establishment_id'));
                                       
-        return view('admin.modalities.index', ['modalities' => $modalities]);
+        return view('admin.modalities.index', ['modalities' => $modalities, 'modalities_admin' => $modalities_admin, 'establishment' => $establishment]);
     }
 
     public function create()
@@ -79,5 +88,17 @@ class ModalityController extends Controller
         $modality->restore();
 
         return redirect()->route('admin.modalities.index')->with('success', 'Modalidade restaurada com sucesso.');
+    }
+
+    public function attach(Request $request)
+    {
+        $establishmentId = Session::get('establishment_id');
+
+        $modalities = $request->input('modalities');
+
+        $establishment = Establishment::findOrFail($establishmentId);
+        $establishment->modalities()->sync($modalities);
+
+        return redirect()->route('admin.modalities.index')->with('success', 'Modalidades atribuidas com sucesso.');
     }
 }

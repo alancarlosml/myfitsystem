@@ -56,12 +56,12 @@ class Establishment extends Model
 
     public function categories()
     {
-        return $this->hasMany(Category::class);
+        return $this->belongsToMany(Category::class, 'category_establishment');
     }
 
     public function modalities()
     {
-        return $this->hasMany(Modality::class);
+        return $this->belongsToMany(Modality::class, 'modality_establishment');
     }
 
     public function roles()

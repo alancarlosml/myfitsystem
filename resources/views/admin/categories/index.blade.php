@@ -1,3 +1,12 @@
+@php
+    $role = null;
+    $user = null;
+    if (Auth::guard('user')->check()) {
+        $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
+        $user = Auth::user();
+    } 
+@endphp
+
 <x-app-layout>
     <x-header>
         <x-slot:title>Categorias</x-slot:title>
@@ -7,6 +16,7 @@
 
     <section class="mt-12">
         <div class="mx-auto w-full">
+            @if($role && in_array($role->name, ['superuser']))
             <div class="relative overflow-hidden">
                 <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 py-4">
                     <div class="w-full md:w-1/2">
@@ -120,6 +130,25 @@
                     </ul> --}}
                 </nav>
             </div>
+            @elseif($role && in_array($role->name, ['admin']))
+            <div class="relative overflow-hidden">
+                <form method="POST" action="{{ route('admin.categories.attach') }}">
+                    @csrf
+                    <div class="grid gap-6 md:grid-cols-2">
+                        @foreach($categories_admin as $category)
+                        <div class="flex items-center p-2 border border-gray-200 rounded dark:border-gray-700 mr-3 mb-2">
+                            <input id="bordered-checkbox-{{ $category->id }}" type="checkbox" value="{{ $category->id }}"
+                                @if($establishment->categories->contains($category->id)) checked @endif
+                                name="categories[]"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="bordered-checkbox-{{ $category->id }}" class="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">{{ $category->name }}</label>
+                        </div>
+                        @endforeach
+                    </div>
+                    <input type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md cursor-pointer" value="Salvar">
+                </form>
+            </div>
+            @endif
         </div>
     </section>
 

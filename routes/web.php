@@ -66,7 +66,6 @@ Route::prefix('gestao')->group(function () {
             Route::get('/estabelecimentos/{establishment}/restaurar', [EstablishmentController::class, 'restore'])->name('admin.establishments.restore');
 
             // Rotas de categorias
-            Route::get('/categorias', [CategoryController::class, 'index'])->name('admin.categories.index');
             Route::get('/categorias/novo', [CategoryController::class, 'create'])->name('admin.categories.create');
             Route::post('/categorias/novo', [CategoryController::class, 'store'])->name('admin.categories.store');
             Route::get('/categorias/{category}/editar', [CategoryController::class, 'edit'])->name('admin.categories.edit');
@@ -76,7 +75,6 @@ Route::prefix('gestao')->group(function () {
             Route::get('/categorias/{category}/restaurar', [CategoryController::class, 'restore'])->name('admin.categories.restore');
 
             // Rotas de modalidades
-            Route::get('/modalidades', [ModalityController::class, 'index'])->name('admin.modalities.index');
             Route::get('/modalidades/novo', [ModalityController::class, 'create'])->name('admin.modalities.create');
             Route::post('/modalidades/novo', [ModalityController::class, 'store'])->name('admin.modalities.store');
             Route::get('/modalidades/{modality}/editar', [ModalityController::class, 'edit'])->name('admin.modalities.edit');
@@ -114,6 +112,14 @@ Route::prefix('gestao')->group(function () {
             Route::put('/colaboradores/{user}/vincular/editar', [UserController::class, 'updateLinkEstablishment'])->name('admin.users.establishments.update');
             Route::get('/colaboradores/{user}/desvincular/{establishment}', [UserController::class, 'unlinkEstablishment'])->name('admin.users.establishments.destroy');
 
+            // Rotas de categorias
+            Route::get('/categorias', [CategoryController::class, 'index'])->name('admin.categories.index');
+            Route::post('/categorias/vincular', [CategoryController::class, 'attach'])->name('admin.categories.attach');
+
+            // Rotas de modalidades
+            Route::get('/modalidades', [ModalityController::class, 'index'])->name('admin.modalities.index');
+            Route::post('/modalidades/vincular', [ModalityController::class, 'attach'])->name('admin.modalities.attach');
+            
             // Rotas de exercicios
             Route::get('/exercicios', [ExerciseController::class, 'index'])->name('admin.exercises.index');
             Route::get('/exercicios/novo', [ExerciseController::class, 'create'])->name('admin.exercises.create');

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Models\Establishment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class CategoryController extends Controller
 {
@@ -12,8 +15,14 @@ class CategoryController extends Controller
     {
         $categories = Category::select('categories.*')
                             ->orderBy('categories.name')->get();
+        
+        $categories_admin = Category::select('categories.*')
+                            ->where('active', 1)
+                            ->orderBy('categories.name')->get();
+                        
+        $establishment = Establishment::with('categories')->findOrFail(Session::get('establishment_id'));
                                       
-        return view('admin.categories.index', ['categories' => $categories]);
+        return view('admin.categories.index', ['categories' => $categories, 'categories_admin' => $categories_admin, 'establishment' => $establishment]);
     }
 
     public function create()
@@ -79,5 +88,17 @@ class CategoryController extends Controller
         $category->restore();
 
         return redirect()->route('admin.categories.index')->with('success', 'Categoria restaurada com sucesso.');
+    }
+
+    public function attach(Request $request)
+    {
+        $establishmentId = Session::get('establishment_id');
+
+        $categories = $request->input('categories');
+
+        $establishment = Establishment::findOrFail($establishmentId);
+        $establishment->categories()->sync($categories);
+
+        return redirect()->route('admin.categories.index')->with('success', 'Categorias atribuidas com sucesso.');
     }
 }
