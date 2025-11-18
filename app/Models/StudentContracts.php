@@ -20,12 +20,19 @@ class StudentContracts extends Model
         'start_date',
         'end_date',
         'active',
+        'status',
+        'paid_at',
     ];
 
     protected $dates = [
         'payment_date',
         'start_date',
         'end_date',
+        'paid_at',
+    ];
+
+    protected $casts = [
+        'paid_at' => 'datetime',
     ];
 
     public function student()

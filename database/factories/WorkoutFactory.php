@@ -22,17 +22,20 @@ class WorkoutFactory extends Factory
      */
     public function definition()
     {
-        $establishment = Establishment::all()->random();
+        $establishment = Establishment::whereHas('users', function ($query) {
+            $query->whereHas('roles', function ($q) {
+                $q->where('name', 'instrutor');
+            });
+        })->whereHas('students')->whereHas('exercises')->inRandomOrder()->first();
+
+        if (!$establishment) {
+            throw new \Exception("Nenhum estabelecimento possui instrutores, estudantes e exercícios associados.");
+        }
 
         // Use whereHas() para filtrar os instrutores com base na função 'instrutor'
         $instructorIds = $establishment->users()->whereHas('roles', function ($query) {
             $query->where('name', 'instrutor');
         })->pluck('users.id')->toArray();
-
-        // Verificar se há instrutores disponíveis
-        if (empty($instructorIds)) {
-            throw new \Exception("Não há instrutores associados ao estabelecimento com o ID {$establishment->id}");
-        }
 
         $studentIds = $establishment->students()->pluck('students.id')->toArray();
         $exerciseIds = $establishment->exercises()->pluck('exercises.id')->toArray();

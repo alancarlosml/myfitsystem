@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Http\Traits\HasEstablishmentContext;
 use App\Models\Establishment;
 use App\Models\Student;
 use App\Models\StudentContracts;
@@ -12,15 +13,90 @@ use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
-    public function index()
+    use HasEstablishmentContext;
+
+    public function index(Request $request)
     {
-        $students = Student::all();
-        return view('admin.students.index', ['students' => $students]);
+        $query = Student::query();
+        
+        // Superuser can see all students, others filter by establishment
+        if ($this->hasAnyRole(['superuser'])) {
+            // Filter by establishment if provided
+            if ($request->filled('establishment_id')) {
+                $query->whereHas('establishments', function($q) use ($request) {
+                    $q->where('establishments.id', $request->establishment_id);
+                });
+            }
+        } else {
+            $establishmentId = $this->getEstablishmentId();
+            if ($establishmentId) {
+                // Optimized: Use join instead of whereHas for better performance
+                $query->join('student_establishment', 'students.id', '=', 'student_establishment.student_id')
+                    ->where('student_establishment.establishment_id', $establishmentId)
+                    ->select('students.*')
+                    ->distinct();
+            } else {
+                // No establishment selected, return empty
+                $query->whereRaw('1 = 0');
+            }
+        }
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('cpf', 'like', "%{$search}%");
+            });
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('active', $request->status == 'ativo' ? 1 : 0);
+        }
+
+        // Gender filter
+        if ($request->filled('gender')) {
+            $query->where('gender', $request->gender);
+        }
+
+        // Date range filter
+        if ($request->filled('created_from')) {
+            $query->whereDate('created_at', '>=', $request->created_from);
+        }
+        if ($request->filled('created_to')) {
+            $query->whereDate('created_at', '<=', $request->created_to);
+        }
+
+        $students = $query->get();
+        
+        // Get establishments for filter dropdown (superuser only)
+        $establishments = collect([]);
+        if ($this->hasAnyRole(['superuser'])) {
+            $establishments = Establishment::orderBy('name')->get();
+        }
+
+        // Get unique genders for filter
+        $genders = Student::distinct()->whereNotNull('gender')->pluck('gender')->map(function($gender) {
+            return [
+                'value' => $gender,
+                'label' => ucfirst($gender)
+            ];
+        });
+
+        return view('admin.students.index', [
+            'students' => $students,
+            'establishments' => $establishments,
+            'genders' => $genders,
+            'filters' => $request->only(['search', 'status', 'gender', 'establishment_id', 'created_from', 'created_to'])
+        ]);
     }
 
     public function create()
     {
-        return view('admin.students.add');
+        $genders = ['masculino', 'feminino', 'outro'];
+        return view('admin.students.add', ['genders' => $genders]);
     }
 
     public function store(StoreStudentRequest $request)
@@ -33,7 +109,15 @@ class StudentController extends Controller
             $validatedData['active'] = 0;
         }
 
-        Student::create($validatedData);
+        $student = Student::create($validatedData);
+
+        // Vincular aluno ao estabelecimento do admin logado (se não for superuser)
+        if (!$this->hasAnyRole(['superuser'])) {
+            $establishmentId = $this->getEstablishmentId();
+            if ($establishmentId) {
+                $student->establishments()->attach($establishmentId, ['active' => true]);
+            }
+        }
 
         return redirect()->route('admin.students.index')->with('success', 'Aluno criado com sucesso!');
     }
@@ -42,7 +126,7 @@ class StudentController extends Controller
     public function edit($student)
     {
         $student = Student::find($student);
-        $genders = Student::pluck('gender', 'gender')->unique();
+        $genders = ['masculino', 'feminino', 'outro'];
 
         return view('admin.students.edit', ['student' => $student, 'genders' => $genders]);
     }

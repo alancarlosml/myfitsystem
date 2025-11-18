@@ -7,16 +7,61 @@ use App\Http\Requests\UpdateEstablishmentRequest;
 use App\Models\Establishment;
 use App\Models\Role;
 use App\Models\Student;
-use Illuminate\Contracts\Session\Session;
+use App\Services\AccessControlService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EstablishmentController extends Controller
 {
-    public function index()
+    protected AccessControlService $accessControlService;
+
+    public function __construct(AccessControlService $accessControlService)
     {
-        $establishments = Establishment::all();
-        return view('admin.establishments.index', ['establishments' => $establishments]);
+        $this->accessControlService = $accessControlService;
+    }
+
+    public function index(Request $request)
+    {
+        $query = Establishment::query();
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('address', 'like', "%{$search}%")
+                  ->orWhere('city', 'like', "%{$search}%");
+            });
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('active', $request->status == 'ativo' ? 1 : 0);
+        }
+
+        // Type filter
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Date range filter
+        if ($request->filled('created_from')) {
+            $query->whereDate('created_at', '>=', $request->created_from);
+        }
+        if ($request->filled('created_to')) {
+            $query->whereDate('created_at', '<=', $request->created_to);
+        }
+
+        $establishments = $query->orderBy('name')->get();
+        
+        // Get unique types for filter
+        $types = Establishment::distinct()->whereNotNull('type')->pluck('type')->unique();
+        
+        return view('admin.establishments.index', [
+            'establishments' => $establishments,
+            'types' => $types,
+            'filters' => $request->only(['search', 'status', 'type', 'created_from', 'created_to'])
+        ]);
     }
 
     public function create()
@@ -88,9 +133,10 @@ class EstablishmentController extends Controller
     public function users($establishmentId)
     {
         $establishment = Establishment::findOrFail($establishmentId);
+        $users = $establishment->users()->paginate(10);
         $roles = Role::where('name', '!=', 'superuser')->get();
-        
-        return view('admin.establishments.manage_users', ['establishment' => $establishment, 'roles' => $roles]);
+
+        return view('admin.establishments.manage_users', ['establishment' => $establishment, 'users' => $users, 'roles' => $roles]);
     }
 
     public function contracts($establishmentId)
@@ -145,20 +191,32 @@ class EstablishmentController extends Controller
     public function selectEstablishment()
     {
         $guard = Auth::guard('user')->check() ? 'user' : 'student';
-        $user = Auth::guard($guard)->user();
-        $establishments = [];
-        
-        if($guard == 'user') {
-            $establishments = $user->getEstablishmentsActive()->with('roles')->get();
-        } else {
-            $student = Student::where('id', $user->id)->first();
-            $establishments = $student->establishments()->get();
-        }
+        $actor = Auth::guard($guard)->user();
 
-        // Para cada estabelecimento, obtenha o papel do usuário
-        foreach ($establishments as $establishment) {
-            $role = $user->getRoleForEstablishment($establishment->id);
-            $establishment->role_name = $role ? $role->name : 'Nenhum papel';
+        if ($guard === 'user' && $this->accessControlService->userIsSuperuser($actor)) {
+            $establishments = Establishment::orderBy('name')->get()->map(function (Establishment $establishment) {
+                $establishment->role_name = 'superuser';
+                $establishment->contract_active = $this->accessControlService->establishmentHasActiveSystemContract($establishment);
+                return $establishment;
+            });
+        } elseif ($guard === 'user') {
+            $establishments = $this->accessControlService
+                ->getAccessibleEstablishmentsForUser($actor)
+                ->map(function (Establishment $establishment) use ($actor) {
+                    $role = $actor->getRoleForEstablishment($establishment->id);
+                    $establishment->role_name = $role ? $role->name : 'Nenhum papel';
+                    $establishment->contract_active = true;
+                    return $establishment;
+                });
+        } else {
+            /** @var Student $actor */
+            $establishments = $this->accessControlService
+                ->getAccessibleEstablishmentsForStudent($actor)
+                ->map(function (Establishment $establishment) {
+                    $establishment->role_name = 'Aluno';
+                    $establishment->contract_active = true;
+                    return $establishment;
+                });
         }
 
         return view('auth.select-establishment', compact('establishments'));
@@ -171,15 +229,34 @@ class EstablishmentController extends Controller
         ]);
 
         // Armazenar o estabelecimento na sessão
+        $guard = Auth::guard('user')->check() ? 'user' : 'student';
+
+        if ($guard === 'user') {
+            $user = Auth::guard('user')->user();
+
+            if (!$this->accessControlService->userIsSuperuser($user)) {
+                $allowed = $this->accessControlService
+                    ->getAccessibleEstablishmentsForUser($user)
+                    ->pluck('id');
+
+                if (!$allowed->contains($request->establishment_id)) {
+                    return redirect()->route('select.establishment')->with('error', 'Estabelecimento indisponível para o seu acesso.');
+                }
+            }
+        } else {
+            $student = Auth::guard('student')->user();
+            $allowed = $this->accessControlService
+                ->getAccessibleEstablishmentsForStudent($student)
+                ->pluck('id');
+
+            if (!$allowed->contains($request->establishment_id)) {
+                return redirect()->route('select.establishment')->with('error', 'Estabelecimento indisponível. Regularize seu contrato.');
+            }
+        }
+
         session(['establishment_id' => $request->establishment_id]);
 
-        $guard = Auth::guard('user')->check() ? 'user' : 'student';
-        $redirect = '/';
-        if($guard == 'user') {
-            $redirect = '/gestao/dashboard';
-        } else {
-            $redirect = '/app/dashboard';
-        }
+        $redirect = $guard === 'user' ? '/gestao/dashboard' : '/app/dashboard';
 
         return redirect()->intended($redirect);
     }

@@ -12,9 +12,13 @@
                     alunos.
                 </p>
                 <div class="space-y-4 sm:flex sm:space-y-0 sm:space-x-4">
-                    <a href="{{ route('saiba-mais') }}"
-                       class="inline-flex items-center justify-center w-full px-5 py-3 text-sm font-medium text-center text-white bg-red-700 rounded-lg sm:w-auto hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900">
-                        Saiba Mais
+                    <a href="{{ route('user.login') }}"
+                       class="inline-flex items-center justify-center w-full px-5 py-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg sm:w-auto hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">
+                        Login Admin/Gestor
+                    </a>
+                    <a href="{{ route('student.login') }}"
+                       class="inline-flex items-center justify-center w-full px-5 py-3 text-sm font-medium text-center text-white bg-green-700 rounded-lg sm:w-auto hover:bg-green-800 focus:ring-4 focus:ring-green-300 dark:focus:ring-green-900">
+                        Login Aluno
                     </a>
                 </div>
             </div>

@@ -72,9 +72,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getEstablishmentsActive()
     {
         return $this->belongsToMany(Establishment::class, 'role_user')
-                    ->join('roles', 'role_user.role_id', '=', 'roles.id')
                     ->withPivot('role_id', 'active')
-                    ->wherePivot('establishments.active', 1)
+                    ->wherePivot('active', true)
+                    ->where('establishments.active', true)
                     ->withTimestamps();
     }
 

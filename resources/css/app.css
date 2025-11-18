@@ -1,3 +1,171 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Mobile-first optimizations for students */
+@media (max-width: 640px) {
+    /* Touch-friendly buttons and elements */
+    .btn-mobile {
+        @apply px-6 py-4 text-lg rounded-xl min-h-[48px] active:scale-95 transition-transform;
+    }
+
+    .btn-mobile-large {
+        @apply px-6 py-5 text-xl rounded-2xl min-h-[56px] active:scale-95 transition-transform;
+    }
+
+    /* Card adjustments for mobile */
+    .card-mobile {
+        @apply p-5 rounded-2xl shadow-lg border-0 mx-2;
+    }
+
+    .card-mobile-header {
+        @apply px-6 py-5 text-xl rounded-t-2xl;
+    }
+
+    .card-mobile-content {
+        @apply px-6 py-4;
+    }
+
+    /* Text sizes optimized for mobile */
+    .text-mobile-lg {
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+    }
+
+    .text-mobile-xl {
+        font-size: 1.25rem;
+        line-height: 1.875rem;
+    }
+
+    .text-mobile-2xl {
+        font-size: 1.5rem;
+        line-height: 2rem;
+        font-weight: 600;
+    }
+
+    /* Touch highlight removal */
+    .tap-highlight-none {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Improved spacing for mobile reading */
+    .section-mobile {
+        @apply py-6 px-4 space-y-6;
+    }
+
+    /* Optimized modal sizing */
+    .modal-mobile {
+        @apply max-w-[95vw] mx-2 max-h-[85vh] overflow-y-auto;
+    }
+
+    /* Sidebar mobile optimizations */
+    .sidebar-mobile-nav {
+        @apply px-4 py-3 text-lg space-y-4;
+    }
+
+    .sidebar-mobile-item {
+        @apply w-full py-3 px-4 rounded-xl text-left font-medium min-h-[44px] flex items-center;
+    }
+
+    /* Bottom navigation improvements */
+    .bottom-nav-item {
+        @apply flex flex-col items-center justify-center space-y-1 py-2 px-3 min-h-[64px] active:bg-gray-100 dark:active:bg-gray-700;
+    }
+
+    .bottom-nav-icon {
+        @apply w-6 h-6 transition-colors;
+    }
+
+    .bottom-nav-text {
+        @apply text-xs font-medium leading-tight;
+    }
+
+    /* Dashboard grid adjustments */
+    .dashboard-grid-mobile {
+        @apply grid-cols-2 gap-4 px-4;
+    }
+
+    .dashboard-card-mobile {
+        @apply p-4 rounded-xl min-h-[120px] shadow-sm;
+    }
+
+    /* Form inputs optimized for mobile */
+    .input-mobile {
+        @apply px-4 py-3 text-base rounded-xl border-gray-300 focus:ring-blue-500 focus:border-blue-500 min-h-[44px];
+    }
+
+    .form-mobile-group {
+        @apply space-y-4;
+    }
+
+    /* Notification toasts mobile */
+    .toast-mobile {
+        @apply mx-4 mb-4 px-4 py-3 rounded-xl shadow-lg;
+    }
+
+    /* Safe area padding for modern phones */
+    .safe-area-top {
+        padding-top: env(safe-area-inset-top);
+    }
+
+    .safe-area-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .safe-area-left {
+        padding-left: env(safe-area-inset-left);
+    }
+
+    .safe-area-right {
+        padding-right: env(safe-area-inset-right);
+    }
+}
+
+/* Prevent zoom on input focus in iOS */
+@media screen and (max-width: 767px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    input[type="number"],
+    input[type="search"],
+    input[type="url"],
+    textarea,
+    select {
+        font-size: 16px !important;
+    }
+}
+
+/* Improved animations for mobile performance */
+@media (prefers-reduced-motion: no-preference) and (max-width: 640px) {
+    .animate-mobile {
+        animation-duration: 0.25s;
+    }
+
+    .transition-mobile {
+        transition-duration: 0.2s;
+    }
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+
+  .dark body {
+    @apply bg-dark text-gray-100;
+  }
+
+  /* Removido estilo global de links para permitir controle individual com classes Tailwind */
+  /* a {
+    @apply text-primary hover:text-orange-600;
+  } */
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-dark dark:text-white;
+  }
+
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow p-6;
+  }
+}

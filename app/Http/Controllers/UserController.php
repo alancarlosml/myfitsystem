@@ -4,37 +4,82 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Traits\HasEstablishmentContext;
 use App\Models\Establishment;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    protected $role;
+    use HasEstablishmentContext;
 
-    public function __construct()
+    public function index(Request $request)
     {
-        $this->role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
-    }
+        $query = User::query();
+        
+        // Superuser can see all users, others filter by establishment
+        if ($this->hasAnyRole(['superuser'])) {
+            $query->with('roles')->orderBy('name');
+        } else {
+            $establishmentId = $this->getEstablishmentId();
+            if ($establishmentId) {
+                // Buscar IDs dos usuários vinculados ao estabelecimento
+                $userIds = DB::table('role_user')
+                    ->where('establishment_id', $establishmentId)
+                    ->pluck('user_id')
+                    ->unique();
+                
+                $query->whereIn('id', $userIds)
+                    ->whereNull('deleted_at')
+                    ->orderBy('name');
+                
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
 
-    public function index()
-    {
-        $query = User::select('users.*')
-                          ->orderBy('users.name');
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('cpf', 'like', "%{$search}%");
+            });
+        }
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $query->select('users.*', 'roles.name as role_name')
-                    ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
-                    ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
-                    ->leftJoin('establishments', 'establishments.id', '=', 'role_user.establishment_id')
-                    ->where('establishments.id', Session::get('establishment_id'));
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('active', $request->status == 'ativo' ? 1 : 0);
+        }
+
+        // Date range filter
+        if ($request->filled('created_from')) {
+            $query->whereDate('created_at', '>=', $request->created_from);
+        }
+        if ($request->filled('created_to')) {
+            $query->whereDate('created_at', '<=', $request->created_to);
         }
 
         $users = $query->get();
-        return view('admin.users.index', ['users' => $users]);
+        
+        // Adicionar o papel de cada usuário no estabelecimento atual (para não-superuser)
+        if (!$this->hasAnyRole(['superuser'])) {
+            $establishmentId = $this->getEstablishmentId();
+            if ($establishmentId) {
+                $users->each(function ($user) use ($establishmentId) {
+                    $role = $user->getRoleForEstablishment($establishmentId);
+                    $user->role_name = $role ? $role->name : 'Sem papel';
+                });
+            }
+        }
+        
+        return view('admin.users.index', [
+            'users' => $users,
+            'filters' => $request->only(['search', 'status', 'created_from', 'created_to'])
+        ]);
     }
 
     public function create()
@@ -55,11 +100,25 @@ class UserController extends Controller
             $validatedData['active'] = 0;
         }
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $validatedData['establishment_id'] = Session::get('establishment_id');
-        }
+        $user = User::create($validatedData);
 
-        User::create($validatedData);
+        // Vincular usuário ao estabelecimento e papel
+        if (!$this->hasAnyRole(['superuser'])){
+            $establishmentId = $this->getEstablishmentId();
+            $roleId = $request->input('role');
+            
+            if ($establishmentId && $roleId) {
+                $user->roles()->attach($roleId, ['establishment_id' => $establishmentId]);
+            }
+        } else {
+            // Para superuser, usar os valores do formulário se fornecidos
+            $establishmentId = $request->input('establishment');
+            $roleId = $request->input('role');
+            
+            if ($establishmentId && $roleId) {
+                $user->roles()->attach($roleId, ['establishment_id' => $establishmentId]);
+            }
+        }
 
         return redirect()->route('admin.users.index')->with('success', 'Colaborador criado com sucesso!');
     }
@@ -85,8 +144,8 @@ class UserController extends Controller
             $validatedData['active'] = 0;
         }
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $validatedData['establishment_id'] = Session::get('establishment_id');
+        if (!$this->hasAnyRole(['superuser'])){
+            $validatedData['establishment_id'] = $this->getEstablishmentId();
         }
 
         $user->update($validatedData);
@@ -168,6 +227,79 @@ class UserController extends Controller
         return redirect()->route('admin.users.view', ['user' => $userId])
                         ->with('success', 'Papel removido com sucesso')
                         ->withFragment('#user-establishments');
+    }
+
+    // System-wide user management for superuser
+    public function systemUsers()
+    {
+        $users = User::with(['roles', 'establishments'])->get();
+        return view('admin.system_users.index', ['users' => $users]);
+    }
+
+    public function createSystemUser()
+    {
+        $establishments = Establishment::all();
+        $roles = Role::all();
+
+        return view('admin.system_users.add', ['establishments' => $establishments, 'roles' => $roles]);
+    }
+
+    public function storeSystemUser(StoreUserRequest $request)
+    {
+        $validatedData = $request->validated();
+
+        if(isset($validatedData['active'])) {
+            $validatedData['active'] = 1;
+        } else {
+            $validatedData['active'] = 0;
+        }
+
+        $user = User::create($validatedData);
+
+        return redirect()->route('admin.system_users.index')->with('success', 'Usuário criado com sucesso!');
+    }
+
+    public function editSystemUser($user)
+    {
+        $user = User::with(['roles', 'establishments'])->find($user);
+        $establishments = Establishment::all();
+        $roles = Role::all();
+
+        return view('admin.system_users.edit', ['user' => $user, 'establishments' => $establishments, 'roles' => $roles]);
+    }
+
+    public function updateSystemUser(UpdateUserRequest $request, $userId)
+    {
+        $user = User::findOrFail($userId);
+
+        $validatedData = $request->validated();
+
+        if(isset($validatedData['active'])) {
+            $validatedData['active'] = 1;
+        } else {
+            $validatedData['active'] = 0;
+        }
+
+        $user->update($validatedData);
+
+        return redirect()->route('admin.system_users.index')->with('success', 'Usuário atualizado com sucesso!');
+    }
+
+    public function viewSystemUser($userId)
+    {
+        $user = User::with(['roles', 'establishments'])->findOrFail($userId);
+        $establishments = Establishment::all();
+        $roles = Role::all();
+
+        return view('admin.system_users.view', ['user' => $user, 'establishments' => $establishments, 'roles' => $roles]);
+    }
+
+    public function destroySystemUser($userId)
+    {
+        $user = User::findOrFail($userId);
+        $user->delete();
+
+        return redirect()->route('admin.system_users.index')->with('success', 'Usuário removido com sucesso!');
     }
 
 }

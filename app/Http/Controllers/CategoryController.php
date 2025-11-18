@@ -4,30 +4,82 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Traits\HasEstablishmentContext;
 use App\Models\Category;
 use App\Models\Establishment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 
 class CategoryController extends Controller
 {
-    public function index()
+    use HasEstablishmentContext;
+
+    public function index(Request $request)
     {
-        $categories = Category::select('categories.*')
-                            ->orderBy('categories.name')->get();
+        $query = Category::query();
         
-        $categories_admin = Category::select('categories.*')
+        // For superuser: show all categories
+        if ($this->hasAnyRole(['superuser'])) {
+            $query->orderBy('name');
+        } else {
+            // For admin/others: filter by establishment
+            $establishmentId = $this->getEstablishmentId();
+            if ($establishmentId) {
+                $query->whereHas('establishments', function($q) use ($establishmentId) {
+                    $q->where('establishments.id', $establishmentId);
+                })->orderBy('name');
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('active', $request->status == 'ativo' ? 1 : 0);
+        }
+
+        // Date range filter
+        if ($request->filled('created_from')) {
+            $query->whereDate('created_at', '>=', $request->created_from);
+        }
+        if ($request->filled('created_to')) {
+            $query->whereDate('created_at', '<=', $request->created_to);
+        }
+
+        $categories = $query->get();
+        $categories_admin = Category::with('establishments')
                             ->where('active', 1)
-                            ->orderBy('categories.name')->get();
-                        
-        $establishment = Establishment::with('categories')->findOrFail(Session::get('establishment_id'));
+                            ->orderBy('name')->get();
+        
+        $establishment = null;
+        if (!$this->hasAnyRole(['superuser'])) {
+            $establishmentId = $this->getEstablishmentId();
+            if ($establishmentId) {
+                $establishment = Establishment::with('categories')->find($establishmentId);
+            }
+        }
                                       
-        return view('admin.categories.index', ['categories' => $categories, 'categories_admin' => $categories_admin, 'establishment' => $establishment]);
+        return view('admin.categories.index', [
+            'categories' => $categories, 
+            'categories_admin' => $categories_admin, 
+            'establishment' => $establishment,
+            'filters' => $request->only(['search', 'status', 'created_from', 'created_to'])
+        ]);
     }
 
     public function create()
     {
-        return view('admin.categories.add');
+        $establishmentId = $this->getEstablishmentId();
+
+        return view('admin.categories.add', ['establishmentId' => $establishmentId]);
     }
 
     public function store(StoreCategoryRequest $request)
@@ -92,7 +144,11 @@ class CategoryController extends Controller
 
     public function attach(Request $request)
     {
-        $establishmentId = Session::get('establishment_id');
+        $establishmentId = $this->getEstablishmentId();
+
+        if (!$establishmentId) {
+            return redirect()->route('admin.categories.index')->with('error', 'Estabelecimento não selecionado.');
+        }
 
         $categories = $request->input('categories');
 

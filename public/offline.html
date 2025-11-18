@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFit System - Offline</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .offline-container {
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        .retry-btn {
+            background: white;
+            color: #6366f1;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .features {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .features li {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        .offline-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">🔌</div>
+        <h1>Conexão Perdida</h1>
+        <div class="status-indicator"></div>
+        <small>OFFLINE</small>
+        <p>
+            Ops! Parece que você está sem conexão com a internet.
+            Mas não se preocupe, o <strong>MyFit</strong> ainda funciona offline!
+        </p>
+
+        <ul class="features">
+            <li>✅ Visualize suas aulas agendadas</li>
+            <li>✅ Acesse seu perfil e dados</li>
+            <li>✅ Veja treinos salvos localmente</li>
+            <li>⚡ Novos dados sincronizam automaticamente</li>
+        </ul>
+
+        <button class="retry-btn" onclick="window.location.reload()">
+            🔄 Tentar Reconectar
+        </button>
+
+        <p style="font-size: 0.9rem; margin-top: 20px; opacity: 0.7;">
+            Quando a conexão voltar, todos os seus dados serão sincronizados automaticamente.
+        </p>
+    </div>
+
+    <script>
+        // Auto-retry connection every 30 seconds
+        setInterval(() => {
+            if (navigator.onLine) {
+                window.location.reload();
+            }
+        }, 30000);
+
+        // Listen for connection recovery
+        window.addEventListener('online', () => {
+            // Small delay for stable connection
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        });
+
+        // Log offline status
+        console.log('MyFit rodando em modo offline');
+        console.log('Funcionalidades disponíveis: perfil, aulas agendadas, treinos salvos');
+    </script>
+</body>
+</html>

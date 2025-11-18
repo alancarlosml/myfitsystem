@@ -4,24 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreExerciseRequest;
 use App\Http\Requests\UpdateExerciseRequest;
+use App\Http\Traits\HasEstablishmentContext;
 use App\Models\Exercise;
 use App\Models\Establishment;
 use App\Models\Category;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 
 class ExerciseController extends Controller
 {
-    protected $role;
-    public function __construct()
-    {
-        $this->role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
-    }
+    use HasEstablishmentContext;
 
-    public function index()
+    public function index(Request $request)
     {
         $query = Exercise::select('exercises.*')
                              ->leftJoin('establishments', 'exercises.establishment_id', '=', 'establishments.id')
@@ -30,13 +26,65 @@ class ExerciseController extends Controller
                              ->orderBy('categories.name')
                              ->with(['establishment', 'category']);
         
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $query->where('establishments.id', Session::get('establishment_id'));
+        // Apply establishment filter if not superuser
+        if (!$this->hasAnyRole(['superuser'])) {
+            $establishmentId = $this->getEstablishmentId();
+            if ($establishmentId) {
+                $query->where('establishments.id', $establishmentId);
+            } else {
+                $query->whereRaw('1 = 0'); // Return empty if no establishment
+            }
+        } else {
+            // Filter by establishment if provided (superuser)
+            if ($request->filled('establishment_id')) {
+                $query->where('establishments.id', $request->establishment_id);
+            }
+        }
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('exercises.name', 'like', "%{$search}%")
+                  ->orWhere('exercises.description', 'like', "%{$search}%");
+            });
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('exercises.active', $request->status == 'ativo' ? 1 : 0);
+        }
+
+        // Category filter
+        if ($request->filled('category_id')) {
+            $query->where('exercises.category_id', $request->category_id);
+        }
+
+        // Date range filter
+        if ($request->filled('created_from')) {
+            $query->whereDate('exercises.created_at', '>=', $request->created_from);
+        }
+        if ($request->filled('created_to')) {
+            $query->whereDate('exercises.created_at', '<=', $request->created_to);
         }
 
         $exercises = $query->get();
+
+        // Get establishments for filter dropdown (superuser only)
+        $establishments = collect([]);
+        if ($this->hasAnyRole(['superuser'])) {
+            $establishments = Establishment::orderBy('name')->get();
+        }
+
+        // Get categories for filter dropdown
+        $categories = Category::orderBy('name')->get();
                                       
-        return view('admin.exercises.index', ['exercises' => $exercises]);
+        return view('admin.exercises.index', [
+            'exercises' => $exercises,
+            'establishments' => $establishments,
+            'categories' => $categories,
+            'filters' => $request->only(['search', 'status', 'category_id', 'establishment_id', 'created_from', 'created_to'])
+        ]);
     }
 
     public function create()
@@ -44,14 +92,15 @@ class ExerciseController extends Controller
         $establishments = null;
         $categories = null;
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])) {
-            $establishment = Establishment::where('id', Session::get('establishment_id'))->first(); 
+        if ($this->hasAnyRole(['superuser'])) {
+            $establishments = Establishment::all();
+            $categories = Category::all();
+        } else {
+            $establishmentId = $this->getEstablishmentId();
+            $establishment = $establishmentId ? Establishment::where('id', $establishmentId)->first() : null;
             if ($establishment) {
                 $categories = $establishment->categories;
             }
-        } else {
-            $establishments = Establishment::all();
-            $categories = Category::all();
         }
 
         return view('admin.exercises.add', ['establishments' => $establishments, 'categories' => $categories]);
@@ -84,8 +133,8 @@ class ExerciseController extends Controller
             $validatedData['active'] = 0;
         }
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $validatedData['establishment_id'] = Session::get('establishment_id');
+        if (!$this->hasAnyRole(['superuser'])){
+            $validatedData['establishment_id'] = $this->getEstablishmentId();
         }
 
         Exercise::create($validatedData);
@@ -99,14 +148,15 @@ class ExerciseController extends Controller
         $establishments = null;
         $categories = null;
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])) {
-            $establishment = Establishment::where('id', Session::get('establishment_id'))->first(); 
+        if ($this->hasAnyRole(['superuser'])) {
+            $establishments = Establishment::all();
+            $categories = Category::all();
+        } else {
+            $establishmentId = $this->getEstablishmentId();
+            $establishment = $establishmentId ? Establishment::where('id', $establishmentId)->first() : null;
             if ($establishment) {
                 $categories = $establishment->categories;
             }
-        } else {
-            $establishments = Establishment::all();
-            $categories = Category::all();
         }
 
         return view('admin.exercises.edit', ['exercise' => $exercise, 'establishments' => $establishments, 'categories' => $categories]);
@@ -141,8 +191,8 @@ class ExerciseController extends Controller
             $validatedData['active'] = 0;
         }
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $validatedData['establishment_id'] = Session::get('establishment_id');
+        if (!$this->hasAnyRole(['superuser'])){
+            $validatedData['establishment_id'] = $this->getEstablishmentId();
         }
 
         $exercise->update($validatedData);

@@ -5,7 +5,11 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#6366f1">
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
@@ -24,20 +28,35 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name') }}</title>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 </head>
 
-<body>
-    <div class="flex gap-8 bg-white dark:bg-gray-900 h-screen">
-        <x-sidebar class="min-w-fit flex-grow-0 flex-shrink-0 hidden md:block" />
-        <main class="mt-24 px-8 sm:ml-64 flex-grow">
-            {{-- <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
-                 role="alert">
-                <span class="font-medium">{{\App\Models\Establishment::find(Session::get('establishment_id'))->name}}</span>
-            </div> --}}
-            {{ $slot }}
+@php
+    $showSidebar = true;
+
+    if (Auth::guard('user')->check()) {
+        $accessControlService = app(\App\Services\AccessControlService::class);
+        $showSidebar = !$accessControlService->userIsSuperuser(Auth::user());
+    }
+@endphp
+
+<body class="min-h-screen bg-gray-50 text-gray-900 dark:bg-dark dark:text-gray-100 flex flex-col">
+    <div class="flex {{ $showSidebar ? 'gap-8' : '' }} bg-white dark:bg-gray-900 min-h-screen">
+        <x-sidebar class="min-w-fit flex-grow-0 flex-shrink-0" />
+        <main class="mt-24 px-8 {{ $showSidebar ? 'sm:ml-64' : 'sm:ml-0 w-full' }} flex-grow flex flex-col">
+            <div class="flex-grow">
+                @hasSection('content')
+                    @yield('content')
+                @else
+                    {{ $slot }}
+                @endif
+            </div>
             <x-footer />
         </main>
     </div>

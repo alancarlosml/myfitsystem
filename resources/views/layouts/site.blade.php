@@ -197,7 +197,7 @@
                    class="flex items-center justify-center mb-5 text-2xl font-semibold text-gray-900 dark:text-white">
                     <img src="{{ asset('img/logo.png') }}" class="h-6 mr-3 sm:h-9" alt="MyFit System" />
                 </a>
-                <span class="block text-sm text-center text-gray-500 dark:text-gray-400">© 2024 MyFit System. Todos os
+                <span class="block text-sm text-center text-gray-500 dark:text-gray-400">© {{date('Y')}} MyFit System. Todos os
                     direitos reservados.
                 </span>
                 <ul class="flex justify-center mt-5 space-x-5">

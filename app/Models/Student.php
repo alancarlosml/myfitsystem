@@ -72,4 +72,22 @@ class Student extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Workout::class);
     }
+
+    public function goals()
+    {
+        return $this->hasMany(StudentGoal::class);
+    }
+
+    public function activeGoals()
+    {
+        return $this->hasMany(StudentGoal::class)->where('active', true);
+    }
+
+    public function achievements()
+    {
+        return $this->belongsToMany(Achievement::class, 'achievement_student')
+            ->withPivot('earned_at')
+            ->withTimestamps()
+            ->orderBy('achievement_student.earned_at', 'desc');
+    }
 }

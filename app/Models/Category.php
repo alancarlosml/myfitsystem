@@ -16,4 +16,12 @@ class Category extends Model
         'active',
     ];
 
+    /**
+     * Get the establishments that belong to the category.
+     */
+    public function establishments()
+    {
+        return $this->belongsToMany(Establishment::class, 'category_establishment');
+    }
+
 }

@@ -47,13 +47,28 @@
                         <span>{{ $establishment->active ? 'Ativo' : 'Inativo' }}</span>
                     </div>
                 </td>
-                <td class="px-6 py-4 flex items-center">
-                    <a href="#" onclick="viewEstablishment(event, {{ $establishment->id }})"
-                       class="font-medium mr-3 text-green-600 dark:text-green-500 hover:underline">Gerenciar</a>
-                    <a href="#" onclick="editEstablishment(event, {{ $establishment->id }})"
-                       class="font-medium mr-3 text-blue-600 dark:text-blue-500 hover:underline">Editar</a>
-                    <a href="#" data-modal-target="popup-modal" data-modal-toggle="popup-modal"
-                       class="font-medium text-red-600 dark:text-red-500 hover:underline">Excluir</a>
+                <td class="px-6 py-4">
+                    <div class="flex items-center space-x-2">
+                        <a href="#" onclick="viewEstablishment(event, {{ $establishment->id }})" title="Gerenciar"
+                           class="p-2 text-green-600 dark:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" onclick="editEstablishment(event, {{ $establishment->id }})" title="Editar"
+                           class="p-2 text-blue-600 dark:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" data-modal-target="popup-modal" data-modal-toggle="popup-modal" title="Excluir"
+                           class="p-2 text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </a>
+                    </div>
                     <div id="popup-modal" tabindex="-1"
                          class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
                         <div class="relative p-4 w-full max-w-md max-h-full">

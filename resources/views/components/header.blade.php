@@ -1,5 +1,5 @@
 <section class="w-full flex justify-between">
-    <h2 class="text-4xl font-extrabold dark:text-white">
+    <h2 class="text-4xl font-extrabold dark:text-white mb-3">
         {{ $title }}
     </h2>
     {{-- @if(isset($link))

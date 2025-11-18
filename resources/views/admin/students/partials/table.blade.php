@@ -14,9 +14,9 @@
             <th scope="col" class="py-3 px-6">
                 CPF
             </th>
-            <th scope="col" class="py-3 px-6">
+            {{-- <th scope="col" class="py-3 px-6">
                 Email
-            </th>
+            </th> --}}
             <th scope="col" class="py-3 px-6">
                 Data nascimento
             </th>
@@ -45,12 +45,14 @@
                                class="sr-only">checkbox</label>
                     </div>
                 </td>
-                <th scope="row"
-                    class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                    x-text="student.name">
+                <th scope="row" class="py-4 px-6">
+                    <div class="flex flex-col">
+                        <span class="font-medium text-gray-900 dark:text-white" x-text="student.name"></span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 mt-0.5" x-text="student.email"></span>
+                    </div>
                 </th>
                 <td class="py-4 px-6" x-text="student.cpf"></td>
-                <td class="py-4 px-6" x-text="student.email"></td>
+                {{-- <td class="py-4 px-6" x-text="student.email"></td> --}}
                 <td class="py-4 px-6" x-data="{ formattedDate: (new Date(student.birthdate)).toLocaleDateString('pt-BR') }" x-text="formattedDate"></td>
                 <td class="py-4 px-6"
                     x-text="student.gender === 'masculino' ? 'Masculino' : (student.type === 'feminino' ? 'Feminino' : 'Outro')">
@@ -62,31 +64,46 @@
                         <span x-text="student.active ? 'Ativo' : 'Inativo'"></span>
                     </div>
                 </td>
-                <td class="px-6 py-4 flex items-center">
-                    <a href="#" x-on:click="viewStudent($event, student.id)"
-                       class="font-medium mr-3 text-green-600 dark:text-green-500 hover:underline">Detalhes</a>
-                    <div x-data="{ selectedstudentId: null }">
-                        <script>
-                            function viewStudent(event, studentId) {
-                                event.preventDefault();
-                                var editUrl = `{{ url('/gestao/alunos') }}/${studentId}/detalhes`;
-                                window.location.href = editUrl;
-                            }
-                        </script>
+                <td class="px-6 py-4">
+                    <div class="flex items-center space-x-2">
+                        <a href="#" x-on:click="viewStudent($event, student.id)" title="Detalhes"
+                           class="p-2 text-green-600 dark:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </a>
+                        <div x-data="{ selectedstudentId: null }">
+                            <script>
+                                function viewStudent(event, studentId) {
+                                    event.preventDefault();
+                                    var editUrl = `{{ url('/gestao/alunos') }}/${studentId}/detalhes`;
+                                    window.location.href = editUrl;
+                                }
+                            </script>
+                        </div>
+                        <a href="#" x-on:click="editStudent($event, student.id)" title="Editar"
+                           class="p-2 text-blue-600 dark:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                        </a>
+                        <div x-data="{ selectedstudentId: null }">
+                            <script>
+                                function editStudent(event, studentId) {
+                                    event.preventDefault();
+                                    var editUrl = `{{ url('/gestao/alunos') }}/${studentId}/editar`;
+                                    window.location.href = editUrl;
+                                }
+                            </script>
+                        </div>
+                        <a href="#" data-modal-target="popup-modal" data-modal-toggle="popup-modal" title="Excluir"
+                           class="p-2 text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </a>
                     </div>
-                    <a href="#" x-on:click="editStudent($event, student.id)"
-                       class="font-medium mr-3 text-blue-600 dark:text-blue-500 hover:underline">Editar</a>
-                    <div x-data="{ selectedstudentId: null }">
-                        <script>
-                            function editStudent(event, studentId) {
-                                event.preventDefault();
-                                var editUrl = `{{ url('/gestao/alunos') }}/${studentId}/editar`;
-                                window.location.href = editUrl;
-                            }
-                        </script>
-                    </div>
-                    <a href="#" data-modal-target="popup-modal" data-modal-toggle="popup-modal"
-                       class="font-medium text-red-600 dark:text-red-500 hover:underline">Excluir</a>
 
                     <div id="popup-modal" tabindex="-1"
                          class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">

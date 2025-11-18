@@ -4,25 +4,60 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreModalityRequest;
 use App\Http\Requests\UpdateModalityRequest;
+use App\Http\Traits\HasEstablishmentContext;
 use App\Models\Establishment;
 use App\Models\Modality;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 
 class ModalityController extends Controller
 {
-    public function index()
+    use HasEstablishmentContext;
+
+    public function index(Request $request)
     {
-        $modalities = Modality::select('modalities.*')
-                           ->orderBy('modalities.name')->get();
+        $establishmentId = $this->getEstablishmentId();
+        $query = Modality::query();
+        
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('active', $request->status == 'ativo' ? 1 : 0);
+        }
+
+        // Date range filter
+        if ($request->filled('created_from')) {
+            $query->whereDate('created_at', '>=', $request->created_from);
+        }
+        if ($request->filled('created_to')) {
+            $query->whereDate('created_at', '<=', $request->created_to);
+        }
+
+        $modalities = $query->orderBy('name')->get();
 
         $modalities_admin = Modality::select('modalities.*')
+                            ->with('establishment')
                             ->where('active', 1)
                             ->orderBy('modalities.name')->get();
                        
-       $establishment = Establishment::with('modalities')->findOrFail(Session::get('establishment_id'));
+        $establishment = null;
+        if ($establishmentId) {
+            $establishment = Establishment::with('modalities')->find($establishmentId);
+        }
                                       
-        return view('admin.modalities.index', ['modalities' => $modalities, 'modalities_admin' => $modalities_admin, 'establishment' => $establishment]);
+        return view('admin.modalities.index', [
+            'modalities' => $modalities, 
+            'modalities_admin' => $modalities_admin, 
+            'establishment' => $establishment,
+            'filters' => $request->only(['search', 'status', 'created_from', 'created_to'])
+        ]);
     }
 
     public function create()
@@ -92,7 +127,11 @@ class ModalityController extends Controller
 
     public function attach(Request $request)
     {
-        $establishmentId = Session::get('establishment_id');
+        $establishmentId = $this->getEstablishmentId();
+
+        if (!$establishmentId) {
+            return redirect()->route('admin.modalities.index')->with('error', 'Estabelecimento não selecionado.');
+        }
 
         $modalities = $request->input('modalities');
 

@@ -6,7 +6,7 @@
                 <p class="font-light text-gray-500 sm:text-xl dark:text-gray-400">Escolha um estabelecimento para continuar.</p>
             </div> 
             <div class="grid gap-8 lg:grid-cols-2">
-                @foreach($establishments as $establishment)
+                @forelse($establishments as $establishment)
                 <article class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
                     <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                         {{ $establishment->name }}
@@ -14,6 +14,9 @@
                     <p class="mb-5 font-light text-gray-500 dark:text-gray-400">
                         {{ ucfirst($establishment->role_name) }}
                     </p>
+                    @if(isset($establishment->contract_active) && !$establishment->contract_active)
+                        <p class="mb-4 text-sm font-semibold text-red-600 dark:text-red-400">Contrato do sistema expirado</p>
+                    @endif
                     <div class="flex justify-between items-center">
                         <form action="{{ route('store.establishment') }}" method="POST">
                             @csrf
@@ -27,7 +30,14 @@
                         </form>
                     </div>
                 </article> 
-                @endforeach
+                @empty
+                <div class="lg:col-span-2">
+                    <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-200">
+                        <h3 class="text-lg font-semibold mb-2">Nenhum estabelecimento disponível</h3>
+                        <p class="text-sm">Não encontramos estabelecimentos com contrato ativo para o seu usuário. Entre em contato com a administração para regularizar o acesso.</p>
+                    </div>
+                </div>
+                @endforelse
             </div>
         </div>
     </section>

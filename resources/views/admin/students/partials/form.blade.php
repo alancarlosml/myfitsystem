@@ -29,7 +29,15 @@
                 </ul>
             </div>
         </div>
-        <img class="rounded-full w-72 h-72" src="{{ $student->profile_picture }}" alt="image description">
+        @if(isset($student) && $student->profile_picture)
+            <img class="rounded-full w-72 h-72" src="{{ $student->profile_picture }}" alt="image description">
+        @else
+            <div class="rounded-full w-72 h-72 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                <svg class="w-32 h-32 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+            </div>
+        @endif
     </div>
 
     <div class="sm:col-span-2">

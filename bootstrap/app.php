@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.student' => \App\Http\Middleware\CheckStudentGuard::class,
             'redirectIfAuthenticated' => \App\Http\Middleware\RedirectIfAuthenticated::class,
             'role.establishment' => \App\Http\Middleware\CheckRoleInEstablishment::class,
+            'mobile' => \App\Http\Middleware\CheckMobile::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -3,12 +3,19 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Student;
+use App\Services\AccessControlService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class StudentLoginController extends Controller
 {
+    protected AccessControlService $accessControlService;
+
+    public function __construct(AccessControlService $accessControlService)
+    {
+        $this->accessControlService = $accessControlService;
+    }
+
     public function showLoginForm()
     {
         return view('auth.student-login');
@@ -19,20 +26,21 @@ class StudentLoginController extends Controller
         $credentials = $request->only('email', 'password');
         
         if (Auth::guard('student')->attempt($credentials)) {
-            $user = Auth::guard('student')->user();
-            $student = Student::where('id', $user->id)->first();
-            $establishments = $student->establishments()->get();
+            $student = Auth::guard('student')->user();
+            $establishments = $this->accessControlService->getAccessibleEstablishmentsForStudent($student);
             
             if ($establishments->count() == 1) {
                 $establishment = $establishments->first();
                 session(['establishment_id' => $establishment->id, 'guard' => 'student']);
+                $request->session()->regenerate();
                 return redirect()->intended('/app/dashboard');
             } elseif ($establishments->count() > 1) {
                 session(['guard' => 'student']);
+                $request->session()->regenerate();
                 return redirect()->route('select.establishment');
             } else {
                 Auth::guard('student')->logout();
-                return redirect()->route('student.login')->with('error', 'Você não tem acesso a nenhum estabelecimento.');
+                return redirect()->route('student.login')->with('error', 'Nenhum estabelecimento disponível. Regularize os pagamentos do seu plano.');
             }
         }
 

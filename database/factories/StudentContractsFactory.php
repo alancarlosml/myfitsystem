@@ -41,7 +41,7 @@ class StudentContractsFactory extends Factory
         $paymentTypes = ['credito', 'debito', 'pix', 'boleto', 'dinheiro'];
 
         $serviceName = $this->faker->randomElement($serviceNames);
-        $startDate = $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d');
+        $startDate = $this->faker->dateTimeBetween('-1 year', '-1 day')->format('Y-m-d');
         // Garantir que a data de pagamento é anterior ou igual à data de início
         $paymentDate = $this->faker->dateTimeBetween('-1 year', $startDate)->format('Y-m-d');
 

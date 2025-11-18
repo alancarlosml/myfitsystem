@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClassScheduleRequest;
 use App\Http\Requests\UpdateClassScheduleRequest;
+use App\Http\Traits\HasEstablishmentContext;
 use App\Models\ClassSchedule;
 use App\Models\Establishment;
 use App\Models\Modality;
@@ -12,10 +13,13 @@ use Illuminate\Support\Facades\Session;
 
 class ClassScheduleController extends Controller
 {
-    protected $role;
+    use HasEstablishmentContext;
+
+    protected $guard;
+
     public function __construct()
     {
-        $this->role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
+        $this->guard = Auth::guard('user')->check() ? 'user' : 'student';
     }
 
     public function index()
@@ -26,14 +30,37 @@ class ClassScheduleController extends Controller
                                         ->orderBy('class_schedules.class_date','desc')
                                         ->orderBy('class_schedules.start_time','desc')
                                         ->with(['modality', 'establishment']);
-        
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $query->where('establishments.id', Session::get('establishment_id'));
+
+        // For students or users non-superuser, always filter by current establishment
+        $establishmentId = $this->getEstablishmentId();
+        if ($this->guard === 'student') {
+            if ($establishmentId) {
+                $query->where('establishments.id', $establishmentId);
+            } else {
+                $query->whereRaw('1 = 0'); // Return empty if no establishment
+            }
+        } elseif (!$this->hasAnyRole(['superuser'])) {
+            if ($establishmentId) {
+                $query->where('establishments.id', $establishmentId);
+            } else {
+                $query->whereRaw('1 = 0'); // Return empty if no establishment
+            }
+        }
+
+        // For students, add booking information
+        if ($this->guard === 'student') {
+            $studentId = Auth::guard('student')->id();
+            $query->leftJoin('class_bookings', function($join) use ($studentId) {
+                $join->on('class_schedules.id', '=', 'class_bookings.class_schedule_id')
+                     ->where('class_bookings.student_id', '=', $studentId);
+            })->addSelect('class_bookings.id as booking_id');
         }
 
         $class_schedules = $query->get();
-        
-        return view('admin.class_schedules.index', ['class_schedules' => $class_schedules]);
+
+        // Different view for students vs admins
+        $view = $this->guard === 'student' ? 'student.class_schedules.index' : 'admin.class_schedules.index';
+        return view($view, ['class_schedules' => $class_schedules]);
     }
 
     public function create()
@@ -41,14 +68,15 @@ class ClassScheduleController extends Controller
         $establishments = null;
         $modalities = null;
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])) {
-            $establishment = Establishment::where('id', Session::get('establishment_id'))->first(); 
+        if ($this->hasAnyRole(['superuser'])) {
+            $establishments = Establishment::all();
+            $modalities = Modality::all();
+        } else {
+            $establishmentId = $this->getEstablishmentId();
+            $establishment = $establishmentId ? Establishment::where('id', $establishmentId)->first() : null;
             if ($establishment) {
                 $modalities = $establishment->modalities;
             }
-        } else {
-            $establishments = Establishment::all();
-            $modalities = Modality::all();
         }
 
         return view('admin.class_schedules.add', ['modalities' => $modalities, 'establishments' => $establishments]);
@@ -58,8 +86,8 @@ class ClassScheduleController extends Controller
     {
         $validatedData = $request->validated();
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $validatedData['establishment_id'] = Session::get('establishment_id');
+        if (!$this->hasAnyRole(['superuser'])){
+            $validatedData['establishment_id'] = $this->getEstablishmentId();
         }
 
         ClassSchedule::create($validatedData);
@@ -73,14 +101,15 @@ class ClassScheduleController extends Controller
         $establishments = null;
         $modalities = null;
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])) {
-            $establishment = Establishment::where('id', Session::get('establishment_id'))->first(); 
+        if ($this->hasAnyRole(['superuser'])) {
+            $establishments = Establishment::all();
+            $modalities = Modality::all();
+        } else {
+            $establishmentId = $this->getEstablishmentId();
+            $establishment = $establishmentId ? Establishment::where('id', $establishmentId)->first() : null;
             if ($establishment) {
                 $modalities = $establishment->modalities;
             }
-        } else {
-            $establishments = Establishment::all();
-            $modalities = Modality::all();
         }
 
         return view('admin.class_schedules.edit', [
@@ -95,8 +124,8 @@ class ClassScheduleController extends Controller
         $class_schedule = ClassSchedule::findOrFail($id);
         $validatedData = $request->validated();
 
-        if ($this->role && !in_array($this->role->name, ['superuser'])){
-            $validatedData['establishment_id'] = Session::get('establishment_id');
+        if (!$this->hasAnyRole(['superuser'])){
+            $validatedData['establishment_id'] = $this->getEstablishmentId();
         }
 
         $class_schedule->update($validatedData);
