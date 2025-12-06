@@ -198,6 +198,16 @@ class StudentController extends Controller
 
     public function contractStore(Request $request, $studentId, $establishmentId)
     {
+        // Prepara os dados antes da validação
+        $data = $request->all();
+        
+        // Converte o valor monetário formatado (R$ 1.234,56) para número
+        if (isset($data['amount'])) {
+            $data['amount'] = str_replace(['R$', ' ', '.'], '', $data['amount']);
+            $data['amount'] = str_replace(',', '.', $data['amount']);
+            $request->merge(['amount' => $data['amount']]);
+        }
+
         // Valida os dados da requisição
         $validatedData = $request->validate([
             'service_name' => 'required|in:semanal,mensal,trimestral,semestral,anual',

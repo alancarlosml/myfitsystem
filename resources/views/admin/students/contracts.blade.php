@@ -157,14 +157,18 @@
                                     <label for="amount"
                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Total</label>
                                     <input type="text" name="amount" id="amount"
-                                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
+                                           class="mask-money bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                                           placeholder="R$ 0,00"
+                                           autocomplete="off">
                                 </div>
                                 <div>
                                     <label for="payment_date"
                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Data
                                         de pagamento</label>
                                     <input type="text" name="payment_date" id="payment_date"
-                                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
+                                           class="flatpickr-date bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                                           placeholder="dd/mm/aaaa"
+                                           autocomplete="off">
                                 </div>
                                 <div>
                                     <label for="payment_type"
@@ -184,13 +188,18 @@
                                     <label for="start_date"
                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Início</label>
                                     <input type="text" name="start_date" id="start_date"
-                                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
+                                           class="flatpickr-date bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                                           placeholder="dd/mm/aaaa"
+                                           autocomplete="off">
                                 </div>
                                 <div>
                                     <label for="end_date"
                                            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fim</label>
                                     <input type="text" name="end_date" id="end_date"
-                                           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
+                                           class="flatpickr-date bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                                           placeholder="dd/mm/aaaa"
+                                           autocomplete="off"
+                                           readonly>
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label class="inline-flex items-center cursor-pointer">
@@ -380,5 +389,95 @@
             </div>
         </div>
     </section>
+
+    @push('footer')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Aguarda um pouco para garantir que os date pickers globais foram inicializados
+                setTimeout(function() {
+                    // Recalcula máscaras e date pickers no modal
+                    if (window.MaskSystem) {
+                        const modal = document.getElementById('defaultModal');
+                        if (modal) {
+                            window.MaskSystem.reinitialize(modal);
+                        }
+                    }
+
+                    // Date pickers específicos do modal
+                    const paymentDatePicker = flatpickr("#payment_date", {
+                        dateFormat: "d/m/Y",
+                        locale: "pt",
+                        allowInput: true,
+                        altInput: false
+                    });
+                    
+                    const startDatePicker = flatpickr("#start_date", {
+                        dateFormat: "d/m/Y",
+                        locale: "pt",
+                        allowInput: true,
+                        altInput: false,
+                        onChange: function(selectedDates, dateStr, instance) {
+                            calculateEndDate();
+                        }
+                    });
+
+                    const endDatePicker = flatpickr("#end_date", {
+                        dateFormat: "d/m/Y",
+                        locale: "pt",
+                        allowInput: false,
+                        altInput: false
+                    });
+
+                    // Cálculo automático da data fim baseado no serviço
+                    const serviceSelect = document.getElementById('service_name');
+                    if (serviceSelect) {
+                        serviceSelect.addEventListener('change', function() {
+                            calculateEndDate();
+                        });
+                    }
+
+                    function calculateEndDate() {
+                        const serviceName = serviceSelect?.value;
+                        const startDate = startDatePicker?.selectedDates[0];
+                        
+                        if (!serviceName || !startDate || serviceName === '') {
+                            return;
+                        }
+
+                        const endDate = new Date(startDate);
+                        
+                        switch(serviceName) {
+                            case 'semanal':
+                                endDate.setDate(endDate.getDate() + 7);
+                                break;
+                            case 'mensal':
+                                endDate.setMonth(endDate.getMonth() + 1);
+                                break;
+                            case 'trimestral':
+                                endDate.setMonth(endDate.getMonth() + 3);
+                                break;
+                            case 'semestral':
+                                endDate.setMonth(endDate.getMonth() + 6);
+                                break;
+                            case 'anual':
+                                endDate.setFullYear(endDate.getFullYear() + 1);
+                                break;
+                            default:
+                                return;
+                        }
+
+                        endDatePicker.setDate(endDate, false);
+                    }
+
+                    // Recalcular quando a data de início mudar manualmente
+                    if (startDatePicker) {
+                        startDatePicker.config.onChange.push(function() {
+                            calculateEndDate();
+                        });
+                    }
+                }, 500);
+            });
+        </script>
+    @endpush
 
 </x-app-layout>

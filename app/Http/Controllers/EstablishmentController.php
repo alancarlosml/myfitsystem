@@ -157,6 +157,16 @@ class EstablishmentController extends Controller
     {
         $establishment = Establishment::findOrFail($establishmentId);
 
+        // Prepara os dados antes da validação
+        $data = $request->all();
+        
+        // Converte o valor monetário formatado (R$ 1.234,56) para número
+        if (isset($data['amount'])) {
+            $data['amount'] = str_replace(['R$', ' ', '.'], '', $data['amount']);
+            $data['amount'] = str_replace(',', '.', $data['amount']);
+            $request->merge(['amount' => $data['amount']]);
+        }
+
         $validatedData = $request->validate([
             'service_name' => 'required|in:semanal,mensal,trimestral,semestral,anual',
             'amount' => 'required|numeric|min:0',

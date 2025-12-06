@@ -1,4 +1,5 @@
 import './bootstrap';
+import './masks';
 import Alpine from 'alpinejs';
 
 // Inicializar Alpine.js
