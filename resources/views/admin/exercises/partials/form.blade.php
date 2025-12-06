@@ -82,6 +82,20 @@
         </div>
     </div>
     <div class="sm:col-span-2">
+        <label for="youtube_video_url"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Vídeo do YouTube (URL)</label>
+        <input type="url" name="youtube_video_url" id="youtube_video_url"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                value="{{ $exercise->youtube_video_url ?? old('youtube_video_url') }}"
+                placeholder="https://www.youtube.com/watch?v=... ou https://youtu.be/...">
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Cole a URL completa do vídeo do YouTube. Exemplo: https://www.youtube.com/watch?v=dQw4w9WgXcQ</p>
+        @if (isset($exercise) && $exercise->youtube_video_url)
+            <div class="mt-2">
+                <a href="{{ $exercise->youtube_video_url }}" target="_blank" class="text-blue-500 hover:text-blue-700 text-sm">Ver vídeo no YouTube ↗</a>
+            </div>
+        @endif
+    </div>
+    <div class="sm:col-span-2">
         <label class="inline-flex items-center cursor-pointer">
             <input type="checkbox" value="1" class="sr-only peer" name="active" {{ old('active', $exercise->active ?? false) ? 'checked' : '' }}>
             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>

@@ -47,7 +47,33 @@
     </div>
 
     <div class="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen"
-         x-data="workoutSession({{ count($exercises) }}, {{ json_encode($exercises) }})">
+         x-data="{ 
+             ...workoutSession({{ count($exercises) }}, {{ json_encode($exercises) }}),
+             viewMode: null,
+             getYouTubeEmbedUrl(url) {
+                 if (!url) return '';
+                 let videoId = '';
+                 if (url.includes('youtube.com/watch?v=')) {
+                     videoId = url.split('v=')[1]?.split('&')[0];
+                 } else if (url.includes('youtu.be/')) {
+                     videoId = url.split('youtu.be/')[1]?.split('?')[0];
+                 } else if (url.includes('youtube.com/embed/')) {
+                     return url;
+                 }
+                 if (videoId) {
+                     return `https://www.youtube.com/embed/${videoId}`;
+                 }
+                 return url;
+             },
+             getCurrentViewMode() {
+                 if (this.viewMode) return this.viewMode;
+                 // Auto-select: prefer video if available, otherwise photo
+                 if (this.currentExercise.youtube_video_url) return 'video';
+                 if (this.currentExercise.picture) return 'photo';
+                 return null;
+             }
+         }"
+         x-init="viewMode = getCurrentViewMode()">
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -102,16 +128,72 @@
                         </div>
 
                         <!-- Conteúdo do Exercício -->
-                        <div class="p-8">
+                        <div class="p-4 sm:p-8">
 
-                            <!-- Imagem/Placeholder do Exercício -->
-                            <div class="mb-6 text-center">
+                            <!-- Seletor de Visualização (Vídeo/Foto) -->
+                            <div class="mb-4 flex flex-wrap gap-2 justify-center" x-show="(currentExercise.youtube_video_url && currentExercise.picture)">
+                                <button @click="viewMode = 'video'" 
+                                        :class="getCurrentViewMode() === 'video' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'"
+                                        class="px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+                                        x-show="currentExercise.youtube_video_url">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>Vídeo</span>
+                                </button>
+                                <button @click="viewMode = 'photo'" 
+                                        :class="getCurrentViewMode() === 'photo' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'"
+                                        class="px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2"
+                                        x-show="currentExercise.picture">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span>Foto</span>
+                                </button>
+                            </div>
+
+                            <!-- Vídeo do YouTube -->
+                            <div class="mb-6" x-show="getCurrentViewMode() === 'video'">
+                                <div class="w-full max-w-2xl mx-auto">
+                                    <div class="relative aspect-video bg-black rounded-xl overflow-hidden shadow-lg">
+                                        <iframe 
+                                            :src="getYouTubeEmbedUrl(currentExercise.youtube_video_url)"
+                                            class="absolute top-0 left-0 w-full h-full"
+                                            frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Imagem do Exercício -->
+                            <div class="mb-6 text-center" x-show="getCurrentViewMode() === 'photo'">
+                                <div class="w-full max-w-md mx-auto">
+                                    <img :src="currentExercise.picture ? '{{ asset('storage/') }}/' + currentExercise.picture : ''" 
+                                         :alt="currentExercise.name"
+                                         class="w-full h-auto rounded-xl shadow-lg object-cover"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="w-full aspect-video bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl flex items-center justify-center hidden">
+                                        <div class="text-gray-400 dark:text-gray-500">
+                                            <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                            <p>Imagem não disponível</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Placeholder quando não há vídeo nem foto -->
+                            <div class="mb-6 text-center" x-show="!currentExercise.youtube_video_url && !currentExercise.picture">
                                 <div class="w-full max-w-md mx-auto aspect-video bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl flex items-center justify-center">
                                     <div class="text-gray-400 dark:text-gray-500">
                                         <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
-                                        <p>Imagem do exercício</p>
+                                        <p>Sem mídia disponível</p>
                                     </div>
                                 </div>
                             </div>
@@ -365,6 +447,8 @@
                         this.currentExercise = this.exercises[index];
                         this.currentSet = 1; // Reset to first set
                         this.stopRestTimer();
+                        // Reset view mode for new exercise
+                        this.viewMode = null;
                         this.updateProgress();
                     }
                 },
@@ -375,6 +459,8 @@
                         this.currentExercise = this.exercises[this.currentExerciseIndex];
                         this.currentSet = 1;
                         this.stopRestTimer();
+                        // Reset view mode for new exercise
+                        this.viewMode = null;
                         this.updateProgress();
                     }
                 },
@@ -385,6 +471,8 @@
                         this.currentExercise = this.exercises[this.currentExerciseIndex];
                         this.currentSet = 1;
                         this.stopRestTimer();
+                        // Reset view mode for new exercise
+                        this.viewMode = null;
                         this.updateProgress();
                     }
                 },
@@ -542,7 +630,8 @@
                             // Could restore progress here if needed
                         }
                     }
-                }
+                },
+
             }
         }
     </script>

@@ -15,6 +15,7 @@ class Exercise extends Model
         'name',
         'description',
         'exercise_picture',
+        'youtube_video_url',
         'active',
     ];
 

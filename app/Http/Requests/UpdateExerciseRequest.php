@@ -27,6 +27,7 @@ class UpdateExerciseRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'exercise_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'youtube_video_url' => 'nullable|url|max:500',
             'active' => 'nullable|boolean',
         ];
     }
@@ -46,6 +47,8 @@ class UpdateExerciseRequest extends FormRequest
             'exercise_picture.image' => 'O campo foto do exercício deve ser uma imagem.',
             'exercise_picture.mimes' => 'A foto do exercício deve ser um arquivo do tipo: jpeg, png, jpg, gif, svg.',
             'exercise_picture.max' => 'A foto do exercício não pode ter mais de 2048 kilobytes.',
+            'youtube_video_url.url' => 'O campo URL do YouTube deve ser uma URL válida.',
+            'youtube_video_url.max' => 'A URL do YouTube não pode ter mais de 500 caracteres.',
             'active.required' => 'O campo ativo é obrigatório.',
             'active.boolean' => 'O campo ativo deve ser verdadeiro ou falso.',
         ];

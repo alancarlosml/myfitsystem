@@ -45,6 +45,7 @@ class WorkoutService
                 'rest_time' => $workout->rest_time ?? 60, // em segundos
                 'duration' => max(1, round(($workout->rest_time ?? 60) / 60)), // minutos estimados por série
                 'picture' => $workout->exercise->exercise_picture ?? null,
+                'youtube_video_url' => $workout->exercise->youtube_video_url ?? null,
                 'workout_id' => $workout->id,
                 'order' => $workout->order ?? 0,
             ];
@@ -63,6 +64,7 @@ class WorkoutService
                     'rest_time' => $relatedWorkout->rest_time ?? 60,
                     'duration' => max(1, round(($relatedWorkout->rest_time ?? 60) / 60)),
                     'picture' => $relatedWorkout->exercise->exercise_picture ?? null,
+                    'youtube_video_url' => $relatedWorkout->exercise->youtube_video_url ?? null,
                     'workout_id' => $relatedWorkout->id,
                     'order' => $relatedWorkout->order ?? 0,
                 ];
@@ -88,6 +90,7 @@ class WorkoutService
                     'rest_time' => 60, // Default
                     'duration' => 1, // Default
                     'picture' => $exercise->exercise_picture ?? null,
+                    'youtube_video_url' => $exercise->youtube_video_url ?? null,
                     'workout_id' => null,
                     'order' => 0,
                 ];
