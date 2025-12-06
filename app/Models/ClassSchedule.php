@@ -17,6 +17,7 @@ class ClassSchedule extends Model
     protected $fillable = [
         'modality_id',
         'establishment_id',
+        'user_id',
         'description',
         'class_date',
         'start_time',
@@ -51,6 +52,14 @@ class ClassSchedule extends Model
     public function establishment()
     {
         return $this->belongsTo(Establishment::class);
+    }
+
+    /**
+     * Get the user (instructor) that owns the class schedule.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function class_bookings()

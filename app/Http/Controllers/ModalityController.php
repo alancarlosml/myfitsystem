@@ -16,8 +16,23 @@ class ModalityController extends Controller
     public function index(Request $request)
     {
         $establishmentId = $this->getEstablishmentId();
-        $query = Modality::query();
+        $query = Modality::with('establishment');
         
+        // For superuser: show all modalities
+        if ($this->hasAnyRole(['superuser'])) {
+            $query->orderBy('name');
+        } else {
+            // For admin: show system modalities (establishment_id IS NULL) + own modalities
+            if ($establishmentId) {
+                $query->where(function($q) use ($establishmentId) {
+                    $q->whereNull('establishment_id') // System modalities
+                      ->orWhere('establishment_id', $establishmentId); // Own modalities
+                })->orderBy('name');
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+        }
+
         // Search filter
         if ($request->filled('search')) {
             $search = $request->search;
@@ -40,12 +55,13 @@ class ModalityController extends Controller
             $query->whereDate('created_at', '<=', $request->created_to);
         }
 
-        $modalities = $query->orderBy('name')->get();
+        $modalities = $query->get();
 
-        $modalities_admin = Modality::select('modalities.*')
-                            ->with('establishment')
+        // Modalities available for selection (system modalities only)
+        $modalities_admin = Modality::with('establishment')
+                            ->whereNull('establishment_id') // Only system modalities
                             ->where('active', 1)
-                            ->orderBy('modalities.name')->get();
+                            ->orderBy('name')->get();
                        
         $establishment = null;
         if ($establishmentId) {
@@ -75,6 +91,20 @@ class ModalityController extends Controller
             $validatedData['active'] = 0;
         }
 
+        // Se for superuser, não definir establishment_id (sistema)
+        // Se for admin, definir establishment_id do estabelecimento atual
+        if (!$this->hasAnyRole(['superuser'])) {
+            $establishmentId = $this->getEstablishmentId();
+            if ($establishmentId) {
+                $validatedData['establishment_id'] = $establishmentId;
+            } else {
+                return redirect()->route('admin.modalities.index')->with('error', 'Estabelecimento não selecionado.');
+            }
+        } else {
+            // Super user cria sem establishment_id (sistema)
+            $validatedData['establishment_id'] = null;
+        }
+
         Modality::create($validatedData);
 
         return redirect()->route('admin.modalities.index')->with('success', 'Modalidade criada com sucesso!');
@@ -91,12 +121,30 @@ class ModalityController extends Controller
     {
         $modality = Modality::findOrFail($modalityId);
 
+        // Verificar acesso: admin só pode editar suas próprias modalidades
+        if (!$this->hasAnyRole(['superuser'])) {
+            $establishmentId = $this->getEstablishmentId();
+            if ($modality->establishment_id !== $establishmentId) {
+                return redirect()->route('admin.modalities.index')->with('error', 'Você não tem permissão para editar esta modalidade.');
+            }
+        }
+
         $validatedData = $request->validated();
 
         if(isset($validatedData['active'])) {
             $validatedData['active'] = 1;
         } else {
             $validatedData['active'] = 0;
+        }
+
+        // Não permitir alterar establishment_id se não for superuser
+        if (!$this->hasAnyRole(['superuser'])) {
+            unset($validatedData['establishment_id']);
+        } else {
+            // Super user pode definir como null (sistema)
+            if (!isset($validatedData['establishment_id'])) {
+                $validatedData['establishment_id'] = null;
+            }
         }
 
         $modality->update($validatedData);
@@ -114,7 +162,18 @@ class ModalityController extends Controller
     public function destroy($modalityId)
     {
         $modality = Modality::findOrFail($modalityId);
+        
+        // Verificar acesso: admin só pode deletar suas próprias modalidades
+        if (!$this->hasAnyRole(['superuser'])) {
+            $establishmentId = $this->getEstablishmentId();
+            if ($modality->establishment_id !== $establishmentId) {
+                return redirect()->route('admin.modalities.index')->with('error', 'Você não tem permissão para deletar esta modalidade.');
+            }
+        }
+        
         $modality->delete();
+        
+        return redirect()->route('admin.modalities.index')->with('success', 'Modalidade deletada com sucesso!');
     }
 
     public function restore($modalityId)

@@ -12,6 +12,9 @@
                 Nome
             </th>
             <th scope="col" class="py-3 px-6">
+                Proprietário
+            </th>
+            <th scope="col" class="py-3 px-6">
                 Status
             </th>
             <th scope="col" class="py-3 px-6">
@@ -36,6 +39,12 @@
                     class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     x-text="modality.name">
                 </th>
+                <td class="py-4 px-6">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                          x-bind:class="modality.establishment_id === null ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'"
+                          x-text="modality.establishment_id === null ? 'MyFitSystem' : (modality.establishment ? modality.establishment.name : 'N/A')">
+                    </span>
+                </td>
                 <td class="py-4 px-6">
                     <div class="flex items-center">
                         <div class="inline-block w-4 h-4 mr-2 rounded-full" x-bind:class="modality.active ? 'bg-green-700' : 'bg-red-700'"></div>

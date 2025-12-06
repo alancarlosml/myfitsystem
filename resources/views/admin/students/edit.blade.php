@@ -32,13 +32,60 @@
     </section>
 
     @push('head')
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     @endpush
+
     @push('footer')
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
         <script>
-            const datepickerEl = document.getElementById('birthdate');
-            new Datepicker(datepickerEl, {
-                // options
+            document.addEventListener('DOMContentLoaded', function() {
+                // Date picker para data de nascimento
+                flatpickr("#birthdate", {
+                    dateFormat: "d/m/Y",
+                    locale: "pt",
+                    allowInput: true,
+                    altInput: false,
+                    maxDate: "today"
+                });
+
+                // Máscara de CPF
+                if (typeof jQuery !== 'undefined' && jQuery.fn.mask) {
+                    jQuery('#cpf').mask('000.000.000-00');
+                } else {
+                    // Fallback usando vanilla JS
+                    const cpfInput = document.getElementById('cpf');
+                    if (cpfInput) {
+                        cpfInput.addEventListener('input', function(e) {
+                            let value = e.target.value.replace(/\D/g, '');
+                            if (value.length <= 11) {
+                                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                                e.target.value = value;
+                            }
+                        });
+                    }
+                }
+
+                // Máscara de telefone
+                const phoneInput = document.getElementById('phone');
+                if (phoneInput) {
+                    phoneInput.addEventListener('input', function(e) {
+                        let value = e.target.value.replace(/\D/g, '');
+                        if (value.length <= 11) {
+                            if (value.length <= 10) {
+                                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+                            } else {
+                                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                            }
+                            e.target.value = value;
+                        }
+                    });
+                }
             });
         </script>
     @endpush

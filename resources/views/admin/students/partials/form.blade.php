@@ -52,9 +52,10 @@
         <label for="cpf"
                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">CPF</label>
         <input type="text" name="cpf" id="cpf"
-               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+               class="mask-cpf bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                value="{{ $student->cpf ?? old('cpf') }}"
-               placeholder="CPF">
+               placeholder="000.000.000-00"
+               autocomplete="off">
     </div>
     <div class="w-full">
         <label for="email"
@@ -68,17 +69,19 @@
         <label for="birthdate"
                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Data de nascimento</label>
         <input type="text" name="birthdate" id="birthdate"
-               class="datepicker bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-               value="{{ $student->birthdate ?? old('birthdate') }}"
-               placeholder="Data de nascimento">
+               class="flatpickr-date bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+               value="{{ isset($student) && $student->birthdate ? \Carbon\Carbon::parse($student->birthdate)->format('d/m/Y') : old('birthdate', '') }}"
+               placeholder="dd/mm/aaaa"
+               autocomplete="off">
     </div>
     <div>
         <label for="phone"
                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Telefone</label>
         <input type="text" name="phone" id="phone"
-               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-               placeholder="(00) 0000-0000"
-               value="{{ $student->phone ?? old('phone') }}">
+               class="mask-phone bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+               placeholder="(00) 00000-0000"
+               value="{{ $student->phone ?? old('phone') }}"
+               autocomplete="off">
     </div>
     <div>
         <label for="gender"

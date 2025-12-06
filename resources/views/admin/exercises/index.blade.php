@@ -1,5 +1,4 @@
 <x-app-layout>
-
     <!-- Header Moderno com Gradiente -->
     <div class="bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 text-white">
         <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">

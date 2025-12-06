@@ -22,7 +22,15 @@
             <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Ativo</span>
         </label>
     </div>
-    <input type="hidden" name="establishment_id" value="{{ $establishmentId }}">
+    @php
+        $role = null;
+        if (Auth::guard('user')->check()) {
+            $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
+        }
+    @endphp
+    @if(!$role || !in_array($role->name, ['superuser']))
+        <input type="hidden" name="establishment_id" value="{{ $establishmentId ?? Session::get('establishment_id') }}">
+    @endif
 </div>
 <div class="mt-4 flex justify-end">
     <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md">

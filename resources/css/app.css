@@ -169,3 +169,120 @@
     @apply bg-white dark:bg-gray-800 rounded-2xl shadow p-6;
   }
 }
+
+/* Estilos personalizados para divs de erro nos formulários de login */
+#errorDiv {
+  animation: slideDown 0.3s ease-out;
+  box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1), 0 2px 4px -1px rgba(239, 68, 68, 0.06);
+}
+
+#errorDiv.dark {
+  box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2), 0 2px 4px -1px rgba(239, 68, 68, 0.1);
+}
+
+#errorDiv svg {
+  flex-shrink: 0;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+#errorMessage {
+  word-wrap: break-word;
+  line-height: 1.5;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Melhorias para responsividade da errorDiv */
+@media (max-width: 640px) {
+  #errorDiv {
+    @apply text-sm px-3 py-2.5;
+  }
+  
+  #errorDiv svg {
+    @apply w-4 h-4 me-2;
+  }
+}
+
+/* Estilos para paginação - garantir que não quebre o layout */
+nav[aria-label="Table navigation"] {
+  @apply flex-wrap;
+  width: 100%;
+}
+
+nav[aria-label="Table navigation"] ul {
+  @apply flex-wrap;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Garantir que a paginação não quebre em telas pequenas */
+@media (max-width: 640px) {
+  nav[aria-label="Table navigation"] {
+    @apply flex-col gap-2;
+  }
+  
+  nav[aria-label="Table navigation"] > span {
+    @apply text-xs text-center;
+    order: 2;
+    width: 100%;
+  }
+  
+  nav[aria-label="Table navigation"] > ul {
+    @apply justify-center;
+    order: 1;
+    width: 100%;
+  }
+  
+  nav[aria-label="Table navigation"] ul li {
+    @apply mb-1;
+  }
+}
+
+/* Garantir que os links de paginação não quebrem */
+nav[aria-label="Table navigation"] ul li a,
+nav[aria-label="Table navigation"] ul li span {
+  @apply whitespace-nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  text-decoration: none;
+}
+
+/* Garantir que a paginação funcione dentro de containers com overflow */
+.px-6.py-4 nav[aria-label="Table navigation"],
+.border-t nav[aria-label="Table navigation"] {
+  @apply overflow-x-auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ajustes para telas médias */
+@media (min-width: 641px) and (max-width: 1024px) {
+  nav[aria-label="Table navigation"] {
+    @apply flex-col sm:flex-row;
+  }
+  
+  nav[aria-label="Table navigation"] > span {
+    @apply mb-2 sm:mb-0;
+  }
+}

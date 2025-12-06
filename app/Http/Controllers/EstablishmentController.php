@@ -57,10 +57,17 @@ class EstablishmentController extends Controller
         // Get unique types for filter
         $types = Establishment::distinct()->whereNotNull('type')->pluck('type')->unique();
         
+        // Count establishments with pending contracts (pendente or vencido)
+        $establishmentsWithPendingContracts = Establishment::whereHas('contracts', function($q) {
+            $q->whereIn('status', ['pendente', 'vencido'])
+              ->where('active', 1);
+        })->count();
+        
         return view('admin.establishments.index', [
             'establishments' => $establishments,
             'types' => $types,
-            'filters' => $request->only(['search', 'status', 'type', 'created_from', 'created_to'])
+            'filters' => $request->only(['search', 'status', 'type', 'created_from', 'created_to']),
+            'establishmentsWithPendingContracts' => $establishmentsWithPendingContracts
         ]);
     }
 

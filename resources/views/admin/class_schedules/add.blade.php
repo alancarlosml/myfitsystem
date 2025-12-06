@@ -29,4 +29,45 @@
             </div>
         </div>
     </section>
+
+    @push('head')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    @endpush
+
+    @push('footer')
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Date picker para data
+                flatpickr("#class_date", {
+                    dateFormat: "d/m/Y",
+                    locale: "pt",
+                    allowInput: true,
+                    altInput: false,
+                    minDate: "today"
+                });
+
+                // Time picker para hora início
+                flatpickr("#start_time", {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "H:i",
+                    time_24hr: true,
+                    locale: "pt",
+                    allowInput: true
+                });
+
+                // Time picker para hora fim
+                flatpickr("#end_time", {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "H:i",
+                    time_24hr: true,
+                    locale: "pt",
+                    allowInput: true
+                });
+            });
+        </script>
+    @endpush
 </x-app-layout>

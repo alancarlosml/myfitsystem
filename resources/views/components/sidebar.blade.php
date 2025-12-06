@@ -113,9 +113,9 @@
                 @endif
 
                 @if($isSuperuser)
-                <a href="{{ route('admin.establishments.index') }}"
+                <a href="{{ route('users.dashboard') }}"
                    class="hidden sm:inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-white hover:text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
-                    Gerenciar Estabelecimentos
+                    Dashboard
                 </a>
                 @endif
 
@@ -334,7 +334,7 @@
                     <span class="flex-1 ms-3 whitespace-nowrap">Aulas</span>
                 </a>
             </li>
-            <li>
+            {{-- <li>
                 <a href="/{{ $submenu }}/avaliacoes-fisicas"
                    class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -345,7 +345,7 @@
                     </svg>
                     <span class="flex-1 ms-3 whitespace-nowrap">Avaliações Físicas</span>
                 </a>
-            </li>
+            </li> --}}
             {{-- <li>
                 <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
                       <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 21">

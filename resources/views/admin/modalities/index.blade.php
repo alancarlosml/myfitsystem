@@ -1,9 +1,27 @@
 @php
     $role = null;
     $user = null;
+    $isSuperuser = false;
+    
     if (Auth::guard('user')->check()) {
-        $role = Auth::user()->getRoleForEstablishment(Session::get('establishment_id'));
         $user = Auth::user();
+        
+        // Verificar se é superuser primeiro (superuser pode não ter establishment_id)
+        $superuserRole = \App\Models\Role::where('name', 'superuser')->first();
+        if ($superuserRole) {
+            $isSuperuser = \DB::table('role_user')
+                ->where('user_id', $user->id)
+                ->where('role_id', $superuserRole->id)
+                ->exists();
+        }
+        
+        // Se for superuser, criar um role fake para facilitar as verificações
+        if ($isSuperuser) {
+            $role = (object)['name' => 'superuser'];
+        } else {
+            // Para usuários normais, pegar o role do establishment
+            $role = $user->getRoleForEstablishment(Session::get('establishment_id'));
+        }
     } 
 @endphp
 
@@ -215,31 +233,78 @@
                     </div>
                 </div>
             @elseif($role && in_array($role->name, ['admin']))
-                <!-- Seleção de Modalidades para Admin -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Selecionar Modalidades</h2>
-                    <form method="POST" action="{{ route('admin.modalities.attach') }}">
-                        @csrf
-                        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
-                            @foreach($modalities_admin as $modality)
-                                <div class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700 transition-colors">
-                                    <input id="bordered-checkbox-{{ $modality->id }}" type="checkbox" value="{{ $modality->id }}"
-                                           @if($establishment->modalities->contains($modality->id)) checked @endif
-                                           name="modalities[]"
-                                           class="w-4 h-4 text-violet-600 bg-gray-100 border-gray-300 rounded focus:ring-violet-500 dark:focus:ring-violet-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="bordered-checkbox-{{ $modality->id }}" class="w-full py-2 ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer">
-                                        {{ $modality->name }}
-                                    </label>
-                                </div>
-                            @endforeach
+                <!-- Admin: Lista de Modalidades e Seleção -->
+                <div class="space-y-6">
+                    <!-- Seção: Minhas Modalidades -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Minhas Modalidades</h2>
+                            <a href="{{ route('admin.modalities.create') }}"
+                               class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewbox="0 0 20 20">
+                                    <path clip-rule="evenodd" fill-rule="evenodd"
+                                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                                </svg>
+                                Nova modalidade
+                            </a>
                         </div>
-                        <button type="submit" class="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            Salvar modalidades
-                        </button>
-                    </form>
+                        
+                        @if($establishment && $modalities && $modalities->where('establishment_id', $establishment->id)->count() > 0)
+                            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                @foreach($modalities->where('establishment_id', $establishment->id) as $modality)
+                                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700 transition-colors">
+                                        <div class="flex items-center">
+                                            <span class="text-sm font-medium text-gray-900 dark:text-gray-300">{{ $modality->name }}</span>
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                                {{ $establishment->name }}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <a href="{{ route('admin.modalities.edit', $modality->id) }}" 
+                                               class="p-1.5 text-blue-600 dark:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">Você ainda não criou nenhuma modalidade própria.</p>
+                        @endif
+                    </div>
+
+                    <!-- Seção: Selecionar Modalidades do Sistema -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Selecionar Modalidades do Sistema</h2>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Selecione as modalidades do MyFitSystem que estarão disponíveis na sua academia:</p>
+                        <form method="POST" action="{{ route('admin.modalities.attach') }}">
+                            @csrf
+                            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+                                @foreach($modalities_admin as $modality)
+                                    <div class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700 transition-colors">
+                                        <input id="bordered-checkbox-{{ $modality->id }}" type="checkbox" value="{{ $modality->id }}"
+                                               @if($establishment && $establishment->modalities->contains($modality->id)) checked @endif
+                                               name="modalities[]"
+                                               class="w-4 h-4 text-violet-600 bg-gray-100 border-gray-300 rounded focus:ring-violet-500 dark:focus:ring-violet-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="bordered-checkbox-{{ $modality->id }}" class="w-full py-2 ms-3 text-sm font-medium text-gray-900 dark:text-gray-300 cursor-pointer">
+                                            {{ $modality->name }}
+                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                MyFitSystem
+                                            </span>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <button type="submit" class="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Salvar modalidades
+                            </button>
+                        </form>
+                    </div>
                 </div>
             @endif
         </div>

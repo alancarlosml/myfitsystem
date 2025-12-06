@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateStudentRequest extends FormRequest
@@ -12,6 +13,44 @@ class UpdateStudentRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        // Remove máscaras de CPF e telefone
+        if ($this->has('cpf')) {
+            $this->merge([
+                'cpf' => preg_replace('/\D/', '', $this->cpf)
+            ]);
+        }
+
+        if ($this->has('phone')) {
+            $this->merge([
+                'phone' => preg_replace('/\D/', '', $this->phone)
+            ]);
+        }
+
+        // Converte a data do formato brasileiro (d/m/Y) para o formato do banco (Y-m-d)
+        if ($this->has('birthdate') && !empty($this->birthdate)) {
+            try {
+                $date = Carbon::createFromFormat('d/m/Y', $this->birthdate);
+                $this->merge([
+                    'birthdate' => $date->format('Y-m-d')
+                ]);
+            } catch (\Exception $e) {
+                try {
+                    $date = Carbon::parse($this->birthdate);
+                    $this->merge([
+                        'birthdate' => $date->format('Y-m-d')
+                    ]);
+                } catch (\Exception $e2) {
+                    // Mantém o valor original se não conseguir converter
+                }
+            }
+        }
     }
 
     /**

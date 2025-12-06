@@ -90,6 +90,9 @@ class ClassScheduleController extends Controller
             $validatedData['establishment_id'] = $this->getEstablishmentId();
         }
 
+        // Adiciona o user_id do usuário autenticado
+        $validatedData['user_id'] = Auth::guard('user')->id();
+
         ClassSchedule::create($validatedData);
         return redirect()->route('admin.class_schedules.index')->with('success', 'Agendamento de aula criado com sucesso!');
     }
@@ -126,6 +129,11 @@ class ClassScheduleController extends Controller
 
         if (!$this->hasAnyRole(['superuser'])){
             $validatedData['establishment_id'] = $this->getEstablishmentId();
+        }
+
+        // Mantém o user_id existente ou atualiza com o usuário autenticado se não houver
+        if (!isset($validatedData['user_id']) && Auth::guard('user')->check()) {
+            $validatedData['user_id'] = Auth::guard('user')->id();
         }
 
         $class_schedule->update($validatedData);

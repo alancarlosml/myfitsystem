@@ -31,7 +31,7 @@
                     <span class="font-medium">Sucesso!</span> {{ session('success') }}
                 </div>
             @endif
-            <form method="POST" action="{{ route('admin.physical_assessments.store') }}" class="space-y-6">
+            <form method="POST" action="{{ route('admin.physical_assessments.store') }}" enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
                 <!-- Informações Básicas -->
@@ -67,11 +67,11 @@
                     </div>
                 </div>
 
-                <!-- Medidas Básicas -->
+                <!-- MEDIDAS BÁSICAS -->
                 <div class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Medidas Básicas</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">MEDIDAS BÁSICAS</h3>
 
-                    <div class="grid gap-6 md:grid-cols-4">
+                    <div class="grid gap-6 md:grid-cols-3">
                         <div>
                             <x-input-label for="weight" :value="__('Peso (kg)')" />
                             <input id="weight" name="weight" type="number" step="0.1" value="{{ old('weight') }}"
@@ -87,6 +87,26 @@
                         </div>
 
                         <div>
+                            <x-input-label for="blood_pressure" :value="__('Pressão Arterial (mmHg)')" />
+                            <div class="flex gap-2">
+                                <input id="blood_pressure_systolic" name="blood_pressure_systolic" type="number" min="70" max="250" value="{{ old('blood_pressure_systolic') }}" placeholder="Sistólica"
+                                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <span class="self-center text-gray-500">/</span>
+                                <input id="blood_pressure_diastolic" name="blood_pressure_diastolic" type="number" min="40" max="150" value="{{ old('blood_pressure_diastolic') }}" placeholder="Diastólica"
+                                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            </div>
+                            <x-input-error name="blood_pressure_systolic" class="mt-2" />
+                            <x-input-error name="blood_pressure_diastolic" class="mt-2" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BIOIMPEDÂNCIA -->
+                <div class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">BIOIMPEDÂNCIA</h3>
+
+                    <div class="grid gap-6 md:grid-cols-5">
+                        <div>
                             <x-input-label for="body_fat_percentage" :value="__('% Gordura')" />
                             <input id="body_fat_percentage" name="body_fat_percentage" type="number" step="0.1" min="0" max="100" value="{{ old('body_fat_percentage') }}"
                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -94,24 +114,66 @@
                         </div>
 
                         <div>
-                            <x-input-label for="muscle_mass_percentage" :value="__('% Massa Muscular')" />
+                            <x-input-label for="muscle_mass_percentage" :value="__('% Massa Magra')" />
                             <input id="muscle_mass_percentage" name="muscle_mass_percentage" type="number" step="0.1" min="0" max="100" value="{{ old('muscle_mass_percentage') }}"
                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <x-input-error name="muscle_mass_percentage" class="mt-2" />
                         </div>
+
+                        <div>
+                            <x-input-label for="bmi" :value="__('IMC')" />
+                            <input id="bmi" name="bmi" type="number" step="0.1" min="0" max="100" value="{{ old('bmi') }}"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <x-input-error name="bmi" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="body_age" :value="__('Idade Corporal (anos)')" />
+                            <input id="body_age" name="body_age" type="number" min="0" max="150" value="{{ old('body_age') }}"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <x-input-error name="body_age" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="metabolic_rate" :value="__('Taxa Metabólica (kcal)')" />
+                            <input id="metabolic_rate" name="metabolic_rate" type="number" min="0" value="{{ old('metabolic_rate') }}"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <x-input-error name="metabolic_rate" class="mt-2" />
+                        </div>
                     </div>
                 </div>
 
-                <!-- Circunferências -->
+                <!-- CIRCUNFERÊNCIAS -->
                 <div class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Circunferências (cm)</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">CIRCUNFERÊNCIAS (cm)</h3>
 
-                    <div class="grid gap-6 md:grid-cols-3">
+                    <div class="grid gap-6 md:grid-cols-4">
                         <div>
-                            <x-input-label for="chest_measurement" :value="__('Peito')" />
+                            <x-input-label for="shoulder_measurement" :value="__('Ombro')" />
+                            <input id="shoulder_measurement" name="shoulder_measurement" type="number" step="0.1" value="{{ old('shoulder_measurement') }}"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <x-input-error name="shoulder_measurement" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="chest_measurement" :value="__('Tórax')" />
                             <input id="chest_measurement" name="chest_measurement" type="number" step="0.1" value="{{ old('chest_measurement') }}"
                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <x-input-error name="chest_measurement" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="arm_measurement" :value="__('Braço')" />
+                            <input id="arm_measurement" name="arm_measurement" type="number" step="0.1" value="{{ old('arm_measurement') }}"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <x-input-error name="arm_measurement" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="forearm_measurement" :value="__('Antebraço')" />
+                            <input id="forearm_measurement" name="forearm_measurement" type="number" step="0.1" value="{{ old('forearm_measurement') }}"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <x-input-error name="forearm_measurement" class="mt-2" />
                         </div>
 
                         <div>
@@ -129,24 +191,24 @@
                         </div>
 
                         <div>
-                            <x-input-label for="arm_measurement" :value="__('Braço')" />
-                            <input id="arm_measurement" name="arm_measurement" type="number" step="0.1" value="{{ old('arm_measurement') }}"
-                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <x-input-error name="arm_measurement" class="mt-2" />
-                        </div>
-
-                        <div>
                             <x-input-label for="thigh_measurement" :value="__('Coxa')" />
                             <input id="thigh_measurement" name="thigh_measurement" type="number" step="0.1" value="{{ old('thigh_measurement') }}"
                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <x-input-error name="thigh_measurement" class="mt-2" />
                         </div>
+
+                        <div>
+                            <x-input-label for="leg_measurement" :value="__('Perna')" />
+                            <input id="leg_measurement" name="leg_measurement" type="number" step="0.1" value="{{ old('leg_measurement') }}"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <x-input-error name="leg_measurement" class="mt-2" />
+                        </div>
                     </div>
                 </div>
 
-                <!-- Saúde Cardiovascular -->
+                <!-- TESTES CARDIOVASCULARES -->
                 <div class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Saúde Cardiovascular</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">TESTES CARDIOVASCULARES</h3>
 
                     <div class="grid gap-6 md:grid-cols-3">
                         <div>
@@ -164,19 +226,27 @@
                         </div>
 
                         <div>
-                            <x-input-label for="blood_pressure_systolic" :value="__('Pressão Sistólica (mmHg)')" />
-                            <input id="blood_pressure_systolic" name="blood_pressure_systolic" type="number" min="70" max="250" value="{{ old('blood_pressure_systolic') }}"
+                            <x-input-label for="post_exercise_heart_rate" :value="__('FC Pós Exercício (bpm)')" />
+                            <input id="post_exercise_heart_rate" name="post_exercise_heart_rate" type="number" min="60" max="250" value="{{ old('post_exercise_heart_rate') }}"
                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <x-input-error name="blood_pressure_systolic" class="mt-2" />
-                        </div>
-
-                        <div>
-                            <x-input-label for="blood_pressure_diastolic" :value="__('Pressão Diastólica (mmHg)')" />
-                            <input id="blood_pressure_diastolic" name="blood_pressure_diastolic" type="number" min="40" max="150" value="{{ old('blood_pressure_diastolic') }}"
-                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <x-input-error name="blood_pressure_diastolic" class="mt-2" />
+                            <x-input-error name="post_exercise_heart_rate" class="mt-2" />
                         </div>
                     </div>
+                </div>
+
+                <!-- AVALIAÇÃO POSTURAL -->
+                <div class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">AVALIAÇÃO POSTURAL</h3>
+
+                    <div>
+                        <x-input-label for="postural_photos" :value="__('Fotos da Avaliação Postural')" />
+                        <input id="postural_photos" name="postural_photos[]" type="file" multiple accept="image/*"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Você pode selecionar múltiplas fotos. Formatos aceitos: JPG, PNG, GIF</p>
+                        <x-input-error name="postural_photos" class="mt-2" />
+                    </div>
+
+                    <div id="photo-preview" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
                 </div>
 
                 <!-- Observações e Recomendações -->
@@ -220,4 +290,39 @@
             </div>
         </div>
     </section>
+
+    @push('scripts')
+    <script>
+        // Preview de fotos
+        document.getElementById('postural_photos').addEventListener('change', function(e) {
+            const preview = document.getElementById('photo-preview');
+            preview.innerHTML = '';
+            
+            if (this.files) {
+                Array.from(this.files).forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const div = document.createElement('div');
+                            div.className = 'relative';
+                            div.innerHTML = `
+                                <img src="${e.target.result}" class="w-full h-32 object-cover rounded-lg border border-gray-300">
+                                <button type="button" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 remove-photo">×</button>
+                            `;
+                            preview.appendChild(div);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+
+        // Remover foto do preview (não remove do input, apenas visual)
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-photo')) {
+                e.target.closest('.relative').remove();
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>

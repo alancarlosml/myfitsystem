@@ -31,14 +31,45 @@
         </div>
     </section>
 
-    @push('head')
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
-    @endpush
     @push('footer')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
         <script>
-            const datepickerEl = document.getElementById('birthdate');
-            new Datepicker(datepickerEl, {
-                // options
+            document.addEventListener('DOMContentLoaded', function() {
+                // Máscara de CPF
+                if (typeof jQuery !== 'undefined' && jQuery.fn.mask) {
+                    jQuery('#cpf').mask('000.000.000-00');
+                } else {
+                    const cpfInput = document.getElementById('cpf');
+                    if (cpfInput) {
+                        cpfInput.addEventListener('input', function(e) {
+                            let value = e.target.value.replace(/\D/g, '');
+                            if (value.length <= 11) {
+                                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                                e.target.value = value;
+                            }
+                        });
+                    }
+                }
+
+                // Máscara de telefone
+                const phoneInput = document.getElementById('phone');
+                if (phoneInput) {
+                    phoneInput.addEventListener('input', function(e) {
+                        let value = e.target.value.replace(/\D/g, '');
+                        if (value.length <= 11) {
+                            if (value.length <= 10) {
+                                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                                value = value.replace(/(\d{4})(\d)/, '$1-$2');
+                            } else {
+                                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                            }
+                            e.target.value = value;
+                        }
+                    });
+                }
             });
         </script>
     @endpush

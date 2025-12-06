@@ -9,185 +9,109 @@
         $user = Auth::user();
     } 
 
-    // Definindo o mês e ano que deseja exibir
-    // $year = Carbon::today()->format('Y');
-    // $month = Carbon::today()->format('m');
-
-    // $today = Carbon::today()->format('Y-m-d');
-
-    // // Obter o primeiro dia do mês
-    // $startOfMonth = Carbon::createFromDate($year, $month, 1);
-
-    // // Obter o dia da semana do primeiro dia do mês (0=domingo, 1=segunda, ...)
-    // $firstDayOfWeek = $startOfMonth->dayOfWeek;
-
-    // // Obter o número de dias no mês
-    // $daysInMonth = $startOfMonth->daysInMonth;
-
-    // // Calcular o número de dias do mês anterior a serem exibidos
-    // $daysFromPrevMonth = $firstDayOfWeek ? $firstDayOfWeek : 7;
-
-    // // Obter o primeiro dia a ser exibido (dias do mês anterior)
-    // $startDate = $startOfMonth->copy()->subDays($daysFromPrevMonth);
-
-    // // Array para armazenar as datas do calendário
-    // $calendar = [];
-
-    // // Preencher o calendário com 35 dias (5 semanas)
-    // for ($i = 0; $i < 35; $i++) {
-    //     $date = $startDate->copy()->addDays($i);
-    //     $formattedDate = $date->format('Y-m-d');
-
-    //     // Inicializar o array para o dia
-    //     if (!isset($calendar[$formattedDate])) {
-    //         $calendar[$formattedDate] = [
-    //             'date' => $date,
-    //             'events' => [],
-    //             'is_today' => $formattedDate === $today,
-    //         ];
-    //     }
-
-    //     // Adicionar eventos se existirem para essa data
-    //     foreach ($classSchedules as $schedule) {
-    //         $eventDate = Carbon::parse($schedule->class_date)->format('Y-m-d');
-    //         if ($formattedDate == $eventDate) {
-    //             $calendar[$formattedDate]['events'][] = $schedule;
-    //         }
-    //     }
-    // }
-
 ?>
 <div id="calendar">
 <x-app-layout>
-    <x-header>
-        <x-slot:title>Aulas</x-slot:title>
-    </x-header>
+    <!-- Header Moderno com Gradiente -->
+    <div class="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-white">Aulas</h1>
+                    <p class="mt-1 text-violet-100">Visualize e gerencie o calendário de aulas</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    @if ($role && in_array($role->name, ['superuser', 'admin']))
+                    <a href="{{ route('admin.class_schedules.create') }}"
+                       class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-white/20 hover:bg-white/30 rounded-lg transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewbox="0 0 20 20">
+                            <path clip-rule="evenodd" fill-rule="evenodd"
+                                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                        </svg>
+                        Novo agendamento
+                    </a>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
 
     <x-alert-success />
 
-    <section class="mt-12">
-        <div class="mx-auto w-full">
-            <!-- component -->
-            <div class="items-center justify-center py-4 px-4">
-                @if ($role && in_array($role->name, ['superuser', 'admin']))
-                <div class="flex justify-end mb-3">
-                    <a href="{{ route('admin.class_schedules.create') }}" class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                        <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
-                        </svg>
-                        Adicionar novo
-                    </a>
-                </div>
-                @endif
-                <div class="w-full border border-gray-400 dark:border-gray-700 rounded-lg p-4">
-                    <div class="md:p-8 p-5 dark:bg-gray-800 bg-white">
-                        <div class="px-4 mb-4 flex items-center justify-between">
-                            <span tabindex="0" class="focus:outline-none font-bold dark:text-gray-100 text-gray-800 text-2xl">
-                                {{ucfirst($monthName)}} {{ \Carbon\Carbon::createFromDate($year, $month)->format('Y') }}
-                            </span>
-                            <div class="flex items-center">
-                                <button aria-label="calendar backward" class="focus:text-gray-400 hover:text-gray-400 text-gray-800 dark:text-gray-100" onclick="changeMonth({{ $month - 1 }}, {{ $year }})">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <polyline points="15 6 9 12 15 18" />
-                                    </svg>
-                                </button>
-                                <button aria-label="calendar forward" class="focus:text-gray-400 hover:text-gray-400 ml-3 text-gray-800 dark:text-gray-100" onclick="changeMonth({{ $month + 1 }}, {{ $year }})">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler  icon-tabler-chevron-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <polyline points="9 6 15 12 9 18" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between pt-12 overflow-x-auto">
-                            <table class="w-full">
-                                <thead>
-                                    <tr>
-                                        <th><p class="text-base font-medium text-center">Seg</p></th>
-                                        <th><p class="text-base font-medium text-center">Ter</p></th>
-                                        <th><p class="text-base font-medium text-center">Qua</p></th>
-                                        <th><p class="text-base font-medium text-center">Qui</p></th>
-                                        <th><p class="text-base font-medium text-center">Sex</p></th>
-                                        <th><p class="text-base font-medium text-center">Sab</p></th>
-                                        <th><p class="text-base font-medium text-center">Dom</p></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach(array_chunk($calendar, 7) as $week)
-                                        <tr>
-                                            @foreach($week as $dayData)
-                                                <td class="lg:pt-4 sm:pt-0">
-                                                    @if ($dayData['date']->month == $month)
-                                                        @if (!empty($dayData['events']))
-                                                            <div class="flex items-center justify-center w-full rounded-full cursor-pointer">
-                                                                <a role="link" tabindex="0" data-date="{{ $dayData['date']->format('Y-m-d') }}" data-today="{{ $dayData['is_today'] ? 'true' : 'false' }}" class="text-base w-8 h-8 flex items-center justify-center font-medium text-blue-700 @if ($dayData['is_today']) bg-blue-100 rounded-full @endif">{{ $dayData['date']->day }}</a>
-                                                            </div>
-                                                        @else
-                                                            <div class="px-4 py-4 flex w-full justify-center">
-                                                                <p class="text-base dark:text-gray-100 text-gray-800 @if ($dayData['is_today']) bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center @endif" data-today="{{ $dayData['is_today'] ? 'true' : 'false' }}">{{ $dayData['date']->day }}</p>
-                                                            </div>
-                                                        @endif
-                                                    @else
-                                                        @if (!empty($dayData['events']))
-                                                            <div class="flex items-center justify-center w-full rounded-full cursor-pointer">
-                                                                <a role="link" tabindex="0" data-date="{{ $dayData['date']->format('Y-m-d') }}" class="text-base w-8 h-8 flex items-center justify-center dark:text-gray-200 text-gray-500 font-bold">{{ $dayData['date']->day }}</a>
-                                                            </div>
-                                                        @else
-                                                            <div class="px-4 py-4 flex w-full justify-center">
-                                                                <p class="text-base dark:text-gray-100 text-gray-400">{{ $dayData['date']->day }}</p>
-                                                            </div>
-                                                        @endif
-                                                    @endif
-                                                </td>
-                                            @endforeach
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+    <section class="bg-gray-50 dark:bg-gray-900 py-8">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Calendário -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="md:p-8 p-5">
+                    <div class="px-4 mb-4 flex items-center justify-between">
+                        <span tabindex="0" class="focus:outline-none font-bold dark:text-gray-100 text-gray-800 text-2xl">
+                            {{ucfirst($monthName)}} {{ \Carbon\Carbon::createFromDate($year, $month)->format('Y') }}
+                        </span>
+                        <div class="flex items-center">
+                            <button aria-label="calendar backward" class="focus:text-gray-400 hover:text-gray-400 text-gray-800 dark:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" onclick="changeMonth({{ $month - 1 }}, {{ $year }})">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <polyline points="15 6 9 12 15 18" />
+                                </svg>
+                            </button>
+                            <button aria-label="calendar forward" class="focus:text-gray-400 hover:text-gray-400 ml-3 text-gray-800 dark:text-gray-100 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" onclick="changeMonth({{ $month + 1 }}, {{ $year }})">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler  icon-tabler-chevron-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <polyline points="9 6 15 12 9 18" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                    <div class="md:py-8 py-5 md:px-16 px-5 dark:bg-gray-700 bg-gray-50 rounded-b">
-                        <div class="px-4" id="event-container">
-                            <p class="text-center text-gray-500">Nenhum evento para este dia.</p>
-                            {{-- @if (!empty($events))
-                                @foreach($events as $event)
-                                    <div class="border-b pb-4 border-gray-400 border-dashed mt-3">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center">
-                                                <p class="text-xs font-light leading-3 text-gray-500 dark:text-gray-300">{{ $event->start_time->format('H:i A') }}</p>
-                                                <a tabindex="0" class="focus:outline-none text-lg font-medium leading-5 text-gray-800 dark:text-gray-100 mt-2">{{ $event->description }}</a>
-                                            </div>
-                                            @if ($role && in_array($role->name, ['superuser', 'admin']))
-                                            <div class="flex items-center">
-                                                <a href="{{ route('admin.class_schedules.create') }}" class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                                                    <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                                        <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
-                                                    </svg>
-                                                    Editar
-                                                </a>
-                                                <a href="{{ route('admin.class_schedules.create') }}" class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                                                    <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                                        <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
-                                                    </svg>
-                                                    Excluir
-                                                </a>
-                                            </div>
-                                            @else
-                                            <div class="flex items-center">
-                                                <a href="{{ route('admin.class_schedules.create') }}" class="flex items-center justify-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                                                    <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                                        <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
-                                                    </svg>
-                                                    Inscrever
-                                                </a>
-                                            </div>
-                                            @endif
-                                        </div>
-                                    </div>
+                    <div class="flex items-center justify-between pt-12 overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr>
+                                    <th><p class="text-base font-medium text-center text-gray-700 dark:text-gray-300">Seg</p></th>
+                                    <th><p class="text-base font-medium text-center text-gray-700 dark:text-gray-300">Ter</p></th>
+                                    <th><p class="text-base font-medium text-center text-gray-700 dark:text-gray-300">Qua</p></th>
+                                    <th><p class="text-base font-medium text-center text-gray-700 dark:text-gray-300">Qui</p></th>
+                                    <th><p class="text-base font-medium text-center text-gray-700 dark:text-gray-300">Sex</p></th>
+                                    <th><p class="text-base font-medium text-center text-gray-700 dark:text-gray-300">Sab</p></th>
+                                    <th><p class="text-base font-medium text-center text-gray-700 dark:text-gray-300">Dom</p></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(array_chunk($calendar, 7) as $week)
+                                    <tr>
+                                        @foreach($week as $dayData)
+                                            <td class="lg:pt-4 sm:pt-0">
+                                                @if ($dayData['date']->month == $month)
+                                                    @if (!empty($dayData['events']))
+                                                        <div class="flex items-center justify-center w-full rounded-full cursor-pointer">
+                                                            <a role="link" tabindex="0" data-date="{{ $dayData['date']->format('Y-m-d') }}" data-today="{{ $dayData['is_today'] ? 'true' : 'false' }}" class="text-base w-8 h-8 flex items-center justify-center font-medium text-purple-700 dark:text-purple-400 @if ($dayData['is_today']) bg-purple-100 dark:bg-purple-900 rounded-full @endif hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors">{{ $dayData['date']->day }}</a>
+                                                        </div>
+                                                    @else
+                                                        <div class="px-4 py-4 flex w-full justify-center">
+                                                            <p class="text-base dark:text-gray-100 text-gray-800 @if ($dayData['is_today']) bg-purple-100 dark:bg-purple-900 rounded-full w-8 h-8 flex items-center justify-center @endif" data-today="{{ $dayData['is_today'] ? 'true' : 'false' }}">{{ $dayData['date']->day }}</p>
+                                                        </div>
+                                                    @endif
+                                                @else
+                                                    @if (!empty($dayData['events']))
+                                                        <div class="flex items-center justify-center w-full rounded-full cursor-pointer">
+                                                            <a role="link" tabindex="0" data-date="{{ $dayData['date']->format('Y-m-d') }}" class="text-base w-8 h-8 flex items-center justify-center dark:text-gray-400 text-gray-500 font-bold hover:text-purple-600 dark:hover:text-purple-400 transition-colors">{{ $dayData['date']->day }}</a>
+                                                        </div>
+                                                    @else
+                                                        <div class="px-4 py-4 flex w-full justify-center">
+                                                            <p class="text-base dark:text-gray-600 text-gray-400">{{ $dayData['date']->day }}</p>
+                                                        </div>
+                                                    @endif
+                                                @endif
+                                            </td>
+                                        @endforeach
+                                    </tr>
                                 @endforeach
-                            @endif --}}
-                        </div>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="md:py-8 py-5 md:px-16 px-5 dark:bg-gray-700 bg-gray-50 border-t border-gray-200 dark:border-gray-600">
+                    <div class="px-4" id="event-container">
+                        <p class="text-center text-gray-500 dark:text-gray-400">Nenhum evento para este dia.</p>
                     </div>
                 </div>
             </div>
@@ -236,10 +160,10 @@
                             // Limpa o container de eventos
                             $('#event-container').empty();
 
-                            $('a[data-date]').removeClass('hover:bg-blue-300 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:bg-blue-400 bg-blue-300 ring-2 ring-offset-2 ring-blue-500 bg-blue-400');
+                            $('a[data-date]').removeClass('bg-purple-300 dark:bg-purple-700 ring-2 ring-purple-500');
                 
                             // Adiciona a classe ao elemento clicado
-                            $this.addClass('hover:bg-blue-300 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:bg-blue-400 bg-blue-300 ring-2 ring-offset-2 ring-blue-500 bg-blue-400 rounded-full');
+                            $this.addClass('bg-purple-300 dark:bg-purple-700 ring-2 ring-purple-500 rounded-full');
 
                             // Verifica se há eventos na resposta
                             if (response.events && response.events.length > 0) {
@@ -253,15 +177,15 @@
 
                                     // Cria o HTML para o evento
                                     var eventHtml = `
-                                        <div class="border-b pb-4 border-gray-400 border-dashed mt-3">
+                                        <div class="border-b pb-4 border-gray-300 dark:border-gray-600 border-dashed mt-3">
                                             <div class="flex items-center justify-between">
                                                 <div class="w-full">
-                                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">${startTime} - ${endTime}</span>
+                                                    <span class="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 text-xs font-medium me-2 px-2.5 py-0.5 rounded">${startTime} - ${endTime}</span>
                                                     <p tabindex="0" class="focus:outline-none text-lg font-medium leading-5 text-gray-800 dark:text-gray-100 mt-2">${description}</p>
-                                                    <p class="text-xs font-light leading-3 text-gray-500 dark:text-gray-300 mt-2">${user_name}</p>
+                                                    <p class="text-xs font-light leading-3 text-gray-500 dark:text-gray-400 mt-2">${user_name}</p>
                                                 </div>
                                                 <div class="flex items-center">
-                                                    <a href="{{ route('admin.class_schedules.create') }}" class="flex items-center justify-center text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">
+                                                    <a href="{{ route('admin.class_schedules.create') }}" class="flex items-center justify-center text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800 transition-colors">
                                                         <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                                             <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                                                         </svg>
@@ -277,7 +201,7 @@
                                 });
                             } else {
                                 // Caso não haja eventos
-                                $('#event-container').html('<p class="text-center text-gray-500">Nenhum evento para este dia.</p>');
+                                $('#event-container').html('<p class="text-center text-gray-500 dark:text-gray-400">Nenhum evento para este dia.</p>');
                             }
                         },
                         error: function() {

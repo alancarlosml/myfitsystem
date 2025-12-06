@@ -40,17 +40,19 @@
         <label for="cnpj"
                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">CNPJ</label>
         <input type="text" name="cnpj" id="cnpj"
-               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+               class="mask-cnpj bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                value="{{ $establishment->cnpj ?? old('cnpj') }}"
-               placeholder="CNPJ">
+               placeholder="00.000.000/0000-00"
+               autocomplete="off">
     </div>
     <div class="w-full">
         <label for="phone"
                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Telefone</label>
         <input type="text" name="phone" id="phone"
-               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+               class="mask-phone bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                value="{{ $establishment->phone ?? old('phone') }}"
-               placeholder="Telefone">
+               placeholder="(00) 00000-0000"
+               autocomplete="off">
     </div>
     <div>
         <label for="social_network"

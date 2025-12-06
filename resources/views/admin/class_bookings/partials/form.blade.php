@@ -49,25 +49,25 @@
         <label for="class_date"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Data</label>
         <input type="text" name="class_date" id="class_date"
-                class="datepicker bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                class="flatpickr-date bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 value="{{ $class_schedule->class_date ?? old('class_date') }}"
-                placeholder="Data">
+                placeholder="Selecione a data">
     </div>
     <div class="w-full">
         <label for="start_time"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Hora início</label>
         <input type="text" name="start_time" id="start_time"
-                class="datepicker bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                class="flatpickr-time bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 value="{{ $class_schedule->start_time ?? old('start_time') }}"
-                placeholder="Hora início">
+                placeholder="Selecione a hora de início">
     </div>
     <div class="w-full">
         <label for="end_time"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Hora fim</label>
         <input type="text" name="end_time" id="end_time"
-                class="datepicker bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                class="flatpickr-time bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 value="{{ $class_schedule->end_time ?? old('end_time') }}"
-                placeholder="Hora fim">
+                placeholder="Selecione a hora de término">
     </div>
 </div>
 <div class="mt-4 flex justify-end">

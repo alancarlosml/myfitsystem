@@ -9,8 +9,23 @@
                     <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                         Gestão - Login
                     </h1>
-                    <div x-show="errorMessage && errorMessage.length > 0" x-transition class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        <span x-text="errorMessage"></span>
+                    <div x-show="errorMessage && errorMessage.length > 0" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform translate-y-2"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
+                         class="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/20 dark:text-red-400 border border-red-200 dark:border-red-800" 
+                         role="alert">
+                        <svg class="flex-shrink-0 inline w-5 h-5 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                        </svg>
+                        <span class="sr-only">Erro</span>
+                        <div>
+                            <span class="font-medium">Erro:</span>
+                            <span x-text="errorMessage" class="ml-1"></span>
+                        </div>
                     </div>
                     <form class="space-y-4 md:space-y-6" method="POST" action="{{ route('user.login') }}">
                         @csrf

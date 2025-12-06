@@ -109,6 +109,13 @@ class StudentController extends Controller
             $validatedData['active'] = 0;
         }
 
+        // Gera uma senha padrão se não fornecida
+        if (empty($validatedData['password'])) {
+            $validatedData['password'] = bcrypt('123456'); // Senha padrão temporária
+        } else {
+            $validatedData['password'] = bcrypt($validatedData['password']);
+        }
+
         $student = Student::create($validatedData);
 
         // Vincular aluno ao estabelecimento do admin logado (se não for superuser)
@@ -141,6 +148,14 @@ class StudentController extends Controller
             $validatedData['active'] = 1;
         } else {
             $validatedData['active'] = 0;
+        }
+
+        // Se a senha foi fornecida, criptografa ela
+        if (!empty($validatedData['password'])) {
+            $validatedData['password'] = bcrypt($validatedData['password']);
+        } else {
+            // Remove a senha do array se não foi fornecida
+            unset($validatedData['password']);
         }
 
         $student->update($validatedData);
