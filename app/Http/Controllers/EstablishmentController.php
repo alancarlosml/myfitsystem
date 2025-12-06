@@ -167,6 +167,16 @@ class EstablishmentController extends Controller
             $request->merge(['amount' => $data['amount']]);
         }
 
+        // Converte datas do formato dd/mm/yyyy para yyyy-mm-dd se necessário
+        $dateFields = ['payment_date', 'start_date', 'end_date'];
+        foreach ($dateFields as $field) {
+            if (isset($data[$field]) && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $data[$field])) {
+                $parts = explode('/', $data[$field]);
+                $data[$field] = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+                $request->merge([$field => $data[$field]]);
+            }
+        }
+
         $validatedData = $request->validate([
             'service_name' => 'required|in:semanal,mensal,trimestral,semestral,anual',
             'amount' => 'required|numeric|min:0',

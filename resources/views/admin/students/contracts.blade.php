@@ -136,7 +136,7 @@
                             </button>
                         </div>
                         <!-- Modal body -->
-                        <form action="{{ route('admin.students.contracts.store', [$student, $establishment]) }}"
+                        <form id="contractForm" action="{{ route('admin.students.contracts.store', [$student, $establishment]) }}"
                               method="POST">
                             @csrf
                             <div class="grid gap-4 mb-4 sm:grid-cols-2">
@@ -473,6 +473,113 @@
                     if (startDatePicker) {
                         startDatePicker.config.onChange.push(function() {
                             calculateEndDate();
+                        });
+                    }
+
+                    // Validação e tratamento do formulário
+                    const contractForm = document.getElementById('contractForm');
+                    if (contractForm) {
+                        contractForm.addEventListener('submit', function(e) {
+                            // Validação dos campos
+                            const serviceName = document.getElementById('service_name').value;
+                            const amount = document.getElementById('amount').value;
+                            const paymentDate = document.getElementById('payment_date').value;
+                            const paymentType = document.getElementById('payment_type').value;
+                            const startDate = document.getElementById('start_date').value;
+                            const endDate = document.getElementById('end_date').value;
+
+                            // Validações
+                            if (!serviceName || serviceName === '') {
+                                e.preventDefault();
+                                alert('Por favor, selecione um serviço.');
+                                return false;
+                            }
+
+                            if (!amount || amount === 'R$ 0,00' || amount === 'R$ ') {
+                                e.preventDefault();
+                                alert('Por favor, informe o valor total.');
+                                return false;
+                            }
+
+                            if (!paymentDate) {
+                                e.preventDefault();
+                                alert('Por favor, informe a data de pagamento.');
+                                return false;
+                            }
+
+                            if (!paymentType || paymentType === '') {
+                                e.preventDefault();
+                                alert('Por favor, selecione a forma de pagamento.');
+                                return false;
+                            }
+
+                            if (!startDate) {
+                                e.preventDefault();
+                                alert('Por favor, informe a data de início.');
+                                return false;
+                            }
+
+                            if (!endDate) {
+                                e.preventDefault();
+                                alert('Por favor, informe a data de fim.');
+                                return false;
+                            }
+
+                            // Converte a data do formato dd/mm/yyyy para yyyy-mm-dd
+                            function convertDate(dateStr) {
+                                if (!dateStr) return '';
+                                const parts = dateStr.split('/');
+                                if (parts.length === 3) {
+                                    return parts[2] + '-' + parts[1] + '-' + parts[0];
+                                }
+                                return dateStr;
+                            }
+
+                            // Converte o valor monetário para número
+                            function convertMoney(moneyStr) {
+                                if (!moneyStr) return '0';
+                                let value = moneyStr.replace(/[R$\s.]/g, '');
+                                value = value.replace(',', '.');
+                                return value;
+                            }
+
+                            // Atualiza os valores no formulário antes de enviar
+                            const amountInput = document.getElementById('amount');
+                            const paymentDateInput = document.getElementById('payment_date');
+                            const startDateInput = document.getElementById('start_date');
+                            const endDateInput = document.getElementById('end_date');
+
+                            // Cria inputs hidden com os valores convertidos
+                            const hiddenAmount = document.createElement('input');
+                            hiddenAmount.type = 'hidden';
+                            hiddenAmount.name = 'amount';
+                            hiddenAmount.value = convertMoney(amount);
+                            contractForm.appendChild(hiddenAmount);
+                            amountInput.disabled = true;
+
+                            const hiddenPaymentDate = document.createElement('input');
+                            hiddenPaymentDate.type = 'hidden';
+                            hiddenPaymentDate.name = 'payment_date';
+                            hiddenPaymentDate.value = convertDate(paymentDate);
+                            contractForm.appendChild(hiddenPaymentDate);
+                            paymentDateInput.disabled = true;
+
+                            const hiddenStartDate = document.createElement('input');
+                            hiddenStartDate.type = 'hidden';
+                            hiddenStartDate.name = 'start_date';
+                            hiddenStartDate.value = convertDate(startDate);
+                            contractForm.appendChild(hiddenStartDate);
+                            startDateInput.disabled = true;
+
+                            const hiddenEndDate = document.createElement('input');
+                            hiddenEndDate.type = 'hidden';
+                            hiddenEndDate.name = 'end_date';
+                            hiddenEndDate.value = convertDate(endDate);
+                            contractForm.appendChild(hiddenEndDate);
+                            endDateInput.disabled = true;
+
+                            // Permite o submit normal do formulário
+                            return true;
                         });
                     }
                 }, 500);
