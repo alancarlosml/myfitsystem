@@ -8,7 +8,7 @@
     <!-- Header com Progresso Global -->
     <div class="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 text-white py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-center space-x-4">
                     <button onclick="history.back()" class="p-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,7 +20,7 @@
                         <p class="text-blue-100">{{ count($exercises) }} exercícios • Progresso Global</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-4 self-end md:self-auto">
                     <!-- Cronômetro Global -->
                     <div class="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
                         <div class="flex items-center space-x-2">

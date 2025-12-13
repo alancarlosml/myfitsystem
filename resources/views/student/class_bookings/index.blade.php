@@ -8,7 +8,7 @@
     <!-- Header Moderno com Gradiente -->
     <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-3xl font-bold text-white">Olá, {{ auth()->guard('student')->user()->name }}! 📅</h1>
                     <p class="mt-1 text-blue-100">Agende suas aulas e acompanhe seu cronograma semanal</p>
@@ -62,17 +62,18 @@
                 </div>
 
                 <!-- Filtros e Busca -->
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
+                <!-- Filtros e Busca -->
+                <div class="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                    <div class="relative w-full sm:w-auto">
                         <input type="text" placeholder="Buscar aulas..."
-                               class="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-300">
+                               class="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-300">
                         <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
 
                     <!-- Filtro por Modalidade -->
-                    <select class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                    <select class="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                         <option value="">Todas as aulas</option>
                         <option value="musculacao">Musculação</option>
                         <option value="yoga">Yoga</option>
@@ -84,54 +85,54 @@
         </div>
 
         <!-- Métricas Rápidas -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl p-4 text-white">
-                <div class="flex items-center justify-between">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+            <div class="bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl p-3 md:p-4 text-white">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
                     <div>
-                        <p class="text-emerald-100 text-sm font-medium">Aulas Reservadas</p>
-                        <h3 class="text-2xl font-bold text-white">{{ $bookingsStatistics['classesThisMonth'] ?? 0 }}</h3>
+                        <p class="text-emerald-100 text-xs md:text-sm font-medium">Reservadas</p>
+                        <h3 class="text-xl md:text-2xl font-bold text-white">{{ $bookingsStatistics['classesThisMonth'] ?? 0 }}</h3>
                     </div>
-                    <svg class="w-8 h-8 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 md:w-8 md:h-8 text-white/80 self-end md:self-center hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl p-4 text-white">
-                <div class="flex items-center justify-between">
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl p-3 md:p-4 text-white">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
                     <div>
-                        <p class="text-blue-100 text-sm font-medium">Horas Esta Semana</p>
-                        <h3 class="text-2xl font-bold text-white">{{ $bookingsStatistics['weekHours'] ?? 0 }}h</h3>
+                        <p class="text-blue-100 text-xs md:text-sm font-medium">Horas/Semana</p>
+                        <h3 class="text-xl md:text-2xl font-bold text-white">{{ $bookingsStatistics['weekHours'] ?? 0 }}h</h3>
                     </div>
-                    <svg class="w-8 h-8 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 md:w-8 md:h-8 text-white/80 self-end md:self-center hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl p-4 text-white">
-                <div class="flex items-center justify-between">
+            <div class="bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl p-3 md:p-4 text-white">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
                     <div>
-                        <p class="text-purple-100 text-sm font-medium">Próxima Aula</p>
+                        <p class="text-purple-100 text-xs md:text-sm font-medium">Próxima</p>
                         @if($bookingsStatistics['nextClass'] ?? null)
-                            <p class="text-lg font-bold text-white">{{ \Carbon\Carbon::parse($bookingsStatistics['nextClass']->classSchedule->class_date)->locale('pt_BR')->isoFormat('dd/MM') }} {{ \Carbon\Carbon::parse($bookingsStatistics['nextClass']->classSchedule->start_time)->format('H:i') }}</p>
+                            <p class="text-sm md:text-lg font-bold text-white">{{ \Carbon\Carbon::parse($bookingsStatistics['nextClass']->classSchedule->class_date)->locale('pt_BR')->isoFormat('dd/MM') }} {{ \Carbon\Carbon::parse($bookingsStatistics['nextClass']->classSchedule->start_time)->format('H:i') }}</p>
                         @else
-                            <p class="text-lg font-bold text-white">Sem aulas</p>
+                            <p class="text-sm md:text-lg font-bold text-white">Sem aulas</p>
                         @endif
                     </div>
-                    <svg class="w-8 h-8 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 md:w-8 md:h-8 text-white/80 self-end md:self-center hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-4 text-white">
-                <div class="flex items-center justify-between">
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-3 md:p-4 text-white">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
                     <div>
-                        <p class="text-orange-100 text-sm font-medium">Dias Até Próxima</p>
-                        <h3 class="text-2xl font-bold text-white">{{ $bookingsStatistics['daysUntil'] ?? '-' }}</h3>
+                        <p class="text-orange-100 text-xs md:text-sm font-medium">Dias Para</p>
+                        <h3 class="text-xl md:text-2xl font-bold text-white">{{ $bookingsStatistics['daysUntil'] ?? '-' }}</h3>
                     </div>
-                    <svg class="w-8 h-8 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 md:w-8 md:h-8 text-white/80 self-end md:self-center hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m15-5a6 6 0 11-6-6 6 6 0 016 6z"/>
                     </svg>
                 </div>

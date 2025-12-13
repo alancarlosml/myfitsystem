@@ -8,7 +8,7 @@
     <!-- Header Moderno com Gradiente -->
     <div class="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-3xl font-bold text-white">👤 Meu Perfil</h1>
                     <p class="mt-1 text-blue-100">Gerencie suas informações pessoais e veja suas estatísticas</p>
