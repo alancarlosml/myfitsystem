@@ -195,6 +195,8 @@ class EstablishmentController extends Controller
             'start_date' => $validatedData['start_date'],
             'end_date' => $validatedData['end_date'],
             'active' => $validatedData['active'] ?? true,
+            'status' => 'pago', // Novo cadastro considera como pago (simulação de pagamento)
+            'paid_at' => now(),
         ]);
 
         // Redirect back to a relevant page with a success message
@@ -286,6 +288,38 @@ class EstablishmentController extends Controller
         $redirect = $guard === 'user' ? '/gestao/dashboard' : '/app/dashboard';
 
         return redirect()->intended($redirect);
+    }
+
+    /**
+     * Marcar contrato de estabelecimento como pago
+     */
+    public function markContractAsPaid($establishmentId, $contractId)
+    {
+        $establishment = Establishment::findOrFail($establishmentId);
+        $contract = $establishment->contracts()->findOrFail($contractId);
+
+        $contract->update([
+            'status' => 'pago',
+            'paid_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Contrato marcado como pago com sucesso!');
+    }
+
+    /**
+     * Marcar contrato de estabelecimento como pendente
+     */
+    public function markContractAsPending($establishmentId, $contractId)
+    {
+        $establishment = Establishment::findOrFail($establishmentId);
+        $contract = $establishment->contracts()->findOrFail($contractId);
+
+        $contract->update([
+            'status' => 'pendente',
+            'paid_at' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Contrato marcado como pendente.');
     }
 
 }

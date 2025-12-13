@@ -85,6 +85,8 @@ Route::prefix('gestao')->group(function () {
             Route::get('/estabelecimentos/{establishment}/usuarios', [EstablishmentController::class, 'users'])->name('admin.establishments.users');
             Route::get('/estabelecimentos/{establishment}/contratos', [EstablishmentController::class, 'contracts'])->name('admin.establishments.contracts');
             Route::post('/estabelecimentos/{establishment}/contratos/novo', [EstablishmentController::class, 'contractStore'])->name('admin.establishments.contracts.store');
+            Route::post('/estabelecimentos/{establishment}/contratos/{contract}/pagar', [EstablishmentController::class, 'markContractAsPaid'])->name('admin.establishments.contracts.pay');
+            Route::post('/estabelecimentos/{establishment}/contratos/{contract}/pendente', [EstablishmentController::class, 'markContractAsPending'])->name('admin.establishments.contracts.pending');
             Route::delete('/estabelecimentos/{establishment}/excluir', [EstablishmentController::class, 'destroy'])->name('admin.establishments.destroy');
             Route::get('/estabelecimentos/{establishment}/restaurar', [EstablishmentController::class, 'restore'])->name('admin.establishments.restore');
 
@@ -103,6 +105,8 @@ Route::prefix('gestao')->group(function () {
             Route::get('/alunos/{student}/restaurar', [StudentController::class, 'restore'])->name('admin.students.restore');
             Route::get('/alunos/{student}/contratos/{establishment}', [StudentController::class, 'contracts'])->name('admin.students.contracts');
             Route::post('/alunos/{student}/contratos/{establishment}/novo', [StudentController::class, 'contractStore'])->name('admin.students.contracts.store');
+            Route::post('/alunos/{student}/contratos/{establishment}/{contract}/pagar', [StudentController::class, 'markContractAsPaid'])->name('admin.students.contracts.pay');
+            Route::post('/alunos/{student}/contratos/{establishment}/{contract}/pendente', [StudentController::class, 'markContractAsPending'])->name('admin.students.contracts.pending');
             
             // Rotas de metas para alunos
             Route::get('/alunos/{student}/metas', [StudentGoalController::class, 'index'])->name('admin.students.goals');
@@ -223,7 +227,7 @@ Route::prefix('app')->group(function () {
     Route::post('/logout', [StudentLoginController::class, 'logout'])->name('student.logout');
 
     // Rotas protegidas para alunos autenticados
-    Route::middleware(['auth:student', 'verified', 'mobile'])->group(function () {
+    Route::middleware(['auth:student', 'verified', 'mobile', 'student.contract.active'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'studentDashboard'])->name('student.dashboard');
         Route::get('/', function() { return redirect('/app/dashboard'); });
 

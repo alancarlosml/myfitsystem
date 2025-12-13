@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Establishment;
 use App\Models\Student;
+use App\Models\StudentContracts;
 use App\Models\StudentEstablishment;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -101,9 +102,34 @@ class StudentSeeder extends Seeder
                         'active' => true,
                     ]
                 );
+
+                // Criar contrato ativo e pago para o aluno (valido por 1 ano)
+                $existingContract = StudentContracts::where('student_id', $student->id)
+                    ->where('establishment_id', $establishment->id)
+                    ->where('active', true)
+                    ->where('status', 'pago')
+                    ->where('end_date', '>=', now()->toDateString())
+                    ->first();
+
+                if (!$existingContract) {
+                    StudentContracts::create([
+                        'student_id' => $student->id,
+                        'establishment_id' => $establishment->id,
+                        'service_name' => 'mensal',
+                        'amount' => 150.00,
+                        'payment_date' => now()->toDateString(),
+                        'payment_type' => 'pix',
+                        'start_date' => now()->toDateString(),
+                        'end_date' => now()->addYear()->toDateString(),
+                        'active' => true,
+                        'status' => 'pago',
+                        'paid_at' => now(),
+                    ]);
+                }
             }
         }
 
-        $this->command->info('Alunos criados com sucesso!');
+        $this->command->info('Alunos criados com sucesso (com contratos ativos)!');
     }
 }
+

@@ -296,9 +296,9 @@
                         @empty
                             <div class="text-center py-4">
                                 <p class="text-gray-500 dark:text-gray-400 text-sm mb-3">Nenhuma avaliação física recente</p>
-                                <button class="bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                                <a href="{{ route('student.physical_assessments.index') }}" class="bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors inline-block">
                                     📋 Agendar Avaliação
-                                </button>
+                                </a>
                             </div>
                         @endforelse
                     </div>

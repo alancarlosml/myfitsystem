@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <div class="flex gap-8 bg-white dark:bg-gray-900 h-screen">
+    <div class="flex gap-8 bg-white dark:bg-gray-900 min-h-screen">
         <main class="flex-grow">
             {{ $slot }}
         </main>

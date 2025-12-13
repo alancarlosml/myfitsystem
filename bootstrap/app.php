@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'redirectIfAuthenticated' => \App\Http\Middleware\RedirectIfAuthenticated::class,
             'role.establishment' => \App\Http\Middleware\CheckRoleInEstablishment::class,
             'mobile' => \App\Http\Middleware\CheckMobile::class,
+            'student.contract.active' => \App\Http\Middleware\CheckStudentContractStatus::class,
+            'user.contract.active' => \App\Http\Middleware\CheckUserContractStatus::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

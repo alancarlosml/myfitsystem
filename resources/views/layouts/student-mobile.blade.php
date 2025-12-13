@@ -15,6 +15,9 @@
     <meta name="application-name" content="{{ config('app.name') }}">
     <meta name="msapplication-TileColor" content="#6366f1">
     <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
+    
+    <!-- iOS Safe Area support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
@@ -57,12 +60,7 @@
 
             <!-- Logo/Brand -->
             <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                    <span class="text-white font-bold text-sm">F</span>
-                </div>
-                <span class="text-lg font-semibold text-gray-900 dark:text-white">
-                    {{ config('app.name') }}
-                </span>
+                <img src="{{ asset('img/logo.png') }}" alt="{{ config('app.name') }}" class="h-8 w-auto">
             </div>
 
             <!-- User Menu -->
@@ -135,32 +133,37 @@
         <!-- Navigation Menu -->
         <div class="px-4 py-6 space-y-2">
             <!-- Dashboard -->
+            <!-- Dashboard -->
             <a href="{{ route('student.dashboard') }}"
-               class="block px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors tap-highlight-none">
+               class="block px-4 py-3 rounded-lg transition-colors tap-highlight-none {{ request()->routeIs('student.dashboard') ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-medium' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">
                 📊 Dashboard
             </a>
 
             <!-- Treinos -->
+            <!-- Treinos -->
             <a href="{{ route('student.workouts.index') }}"
-               class="block px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors tap-highlight-none">
+               class="block px-4 py-3 rounded-lg transition-colors tap-highlight-none {{ request()->routeIs('student.workouts.*') ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-medium' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">
                 💪 Fitness
             </a>
 
             <!-- Aulas -->
+            <!-- Aulas -->
             <a href="{{ route('student.class_bookings.index') }}"
-               class="block px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors tap-highlight-none">
+               class="block px-4 py-3 rounded-lg transition-colors tap-highlight-none {{ request()->routeIs('student.class_bookings.*') ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-medium' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">
                 📅 Aulas
             </a>
 
             <!-- Perfil -->
+            <!-- Perfil -->
             <a href="{{ route('student.profile') }}"
-               class="block px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors tap-highlight-none">
+               class="block px-4 py-3 rounded-lg transition-colors tap-highlight-none {{ request()->routeIs('student.profile') ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-medium' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">
                 👤 Perfil
             </a>
 
             <!-- Horários -->
+            <!-- Horários -->
             <a href="{{ route('student.class_schedules.index') }}"
-               class="block px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors tap-highlight-none">
+               class="block px-4 py-3 rounded-lg transition-colors tap-highlight-none {{ request()->routeIs('student.class_schedules.*') ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-medium' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white' }}">
                 🕗 Horários
             </a>
 
@@ -179,16 +182,16 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-4 px-4 pb-20 min-h-screen">
+    <main class="pt-4 px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] min-h-screen">
         @yield('content')
     </main>
 
     <!-- Bottom Navigation Mobile -->
-    <nav class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 fixed bottom-0 left-0 right-0 z-30">
+    <nav class="bg-white/90 backdrop-blur-md dark:bg-gray-900/90 border-t border-gray-200 dark:border-gray-700 fixed bottom-0 left-0 right-0 z-30 pb-[env(safe-area-inset-bottom)]">
         <div class="grid grid-cols-5 h-16">
             <!-- Dashboard -->
             <a href="{{ route('student.dashboard') }}"
-               class="flex flex-col items-center justify-center space-y-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors tap-highlight-none">
+               class="flex flex-col items-center justify-center space-y-1 transition-colors tap-highlight-none {{ request()->routeIs('student.dashboard') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h2a2 2 0 012 2v2H8V5z"/>
@@ -198,7 +201,7 @@
 
             <!-- Fitness -->
             <a href="{{ route('student.workouts.index') }}"
-               class="flex flex-col items-center justify-center space-y-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors tap-highlight-none">
+               class="flex flex-col items-center justify-center space-y-1 transition-colors tap-highlight-none {{ request()->routeIs('student.workouts.*') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
@@ -206,17 +209,16 @@
             </a>
 
             <!-- Agendar (central) -->
-            <a href="{{ route('student.class_bookings.index') }}"
-               class="flex flex-col items-center justify-center space-y-1 text-white rounded-full w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg -mt-6 tap-highlight-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            <a href="{{ route('student.class_schedules.index') }}"
+               class="flex flex-col items-center justify-center space-y-1 text-white rounded-full w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg -mt-6 tap-highlight-none hover:shadow-xl hover:scale-105 transition-all {{ request()->routeIs('student.class_schedules.*') ? 'ring-4 ring-blue-200 dark:ring-blue-900' : '' }}">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                <span class="text-xs font-bold">Agendar</span>
             </a>
 
             <!-- Aulas -->
             <a href="{{ route('student.class_bookings.index') }}"
-               class="flex flex-col items-center justify-center space-y-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors tap-highlight-none">
+               class="flex flex-col items-center justify-center space-y-1 transition-colors tap-highlight-none {{ request()->routeIs('student.class_bookings.*') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
@@ -225,7 +227,7 @@
 
             <!-- Perfil -->
             <a href="{{ route('student.profile') }}"
-               class="flex flex-col items-center justify-center space-y-1 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors tap-highlight-none">
+               class="flex flex-col items-center justify-center space-y-1 transition-colors tap-highlight-none {{ request()->routeIs('student.profile') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                 </svg>

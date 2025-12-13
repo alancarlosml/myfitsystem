@@ -5,6 +5,7 @@
 @extends($layout)
 
 @section('content')
+<div x-data="classDetailsModal()" x-cloak>
     <!-- Header Moderno com Gradiente -->
     <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -169,7 +170,8 @@
                                         <p class="text-gray-600 dark:text-gray-400 mt-1">{{ $booking->classSchedule->description ?? 'Sala principal' }}</p>
                                     </div>
                                     <div class="w-full sm:w-auto">
-                                        <button class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium">
+                                        <button @click="showClassDetails({{ $booking->id }}, '{{ $booking->classSchedule->modality->name ?? 'Aula' }}', '{{ \Carbon\Carbon::parse($booking->classSchedule->class_date)->locale('pt_BR')->isoFormat('dddd, DD/MM/YYYY') }}', '{{ \Carbon\Carbon::parse($booking->classSchedule->start_time)->format('H:i') }}', '{{ \Carbon\Carbon::parse($booking->classSchedule->end_time)->format('H:i') }}', '{{ $booking->classSchedule->class_room ?? 'Principal' }}', '{{ $booking->classSchedule->instructor ?? 'Equipe FitSystem' }}', '{{ $booking->classSchedule->description ?? '' }}')" 
+                                                class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium">
                                             Ver Detalhes
                                         </button>
                                     </div>
@@ -210,39 +212,28 @@
                                 Notificações
                             </h2>
                         </div>
-                        <div class="p-4 space-y-3 bg-white dark:bg-gray-800">
-                            <div class="flex items-start space-x-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                                <div class="flex-shrink-0 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                                    </svg>
+                        <div class="p-4 space-y-3 bg-white dark:bg-gray-800 max-h-80 overflow-y-auto">
+                            @forelse($notifications as $notification)
+                                <div class="flex items-start space-x-3 p-3 {{ ($notification['type'] ?? 'info') == 'success' ? 'bg-green-50 dark:bg-green-900/20' : (($notification['type'] ?? 'info') == 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'bg-blue-50 dark:bg-blue-900/20') }} rounded-lg">
+                                    <div class="flex-shrink-0 w-8 h-8 {{ ($notification['type'] ?? 'info') == 'success' ? 'bg-green-500' : (($notification['type'] ?? 'info') == 'warning' ? 'bg-yellow-500' : 'bg-blue-500') }} rounded-full flex items-center justify-center">
+                                        @if(($notification['type'] ?? 'info') == 'success')
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        @elseif(($notification['type'] ?? 'info') == 'warning')
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                                        @else
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        @endif
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $notification['title'] ?? 'Notificação' }}</p>
+                                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">{{Str::limit($notification['message'] ?? '', 80)}}</p>
+                                    </div>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Meta semanal alcançada! 🎉</p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">Parabéns pela sua progressão!</p>
+                            @empty
+                                <div class="text-center py-6">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Nenhuma notificação recente</p>
                                 </div>
-                            </div>
-
-                            <div class="flex items-start space-x-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Novo feedback do professor</p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">Veja as observações do seu treino</p>
-                                </div>
-                            </div>
-
-                            <div class="text-center pt-2">
-                                <a href="#" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-                                    Ver todas as notificações
-                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                    </svg>
-                                </a>
-                            </div>
+                            @endforelse
                         </div>
                     </div>
 
@@ -263,14 +254,14 @@
                                 <span class="text-gray-700 dark:text-gray-200 font-medium">Meus Treinos</span>
                             </a>
 
-                            <a href="{{ route('student.class_bookings.index') }}" class="flex items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200 group">
+                            <a href="{{ route('student.class_schedules.index') }}" class="flex items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200 group">
                                 <svg class="w-5 h-5 text-green-600 dark:text-green-400 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
                                 <span class="text-gray-700 dark:text-gray-200 font-medium">Agendar Aulas</span>
                             </a>
 
-                            <a href="javascript:void(0)" class="flex items-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors duration-200 group">
+                            <a href="{{ route('student.profile') }}" class="flex items-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors duration-200 group">
                                 <svg class="w-5 h-5 text-purple-600 dark:text-purple-400 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
@@ -293,21 +284,47 @@
                         </h2>
                     </div>
                     <div class="p-6 bg-white dark:bg-gray-800">
-                        <div class="flex items-center justify-center py-12">
-                            <div class="text-center max-w-md mx-auto">
-                                <svg class="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                                </svg>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Rastreamento Inteligente</h3>
-                                <p class="text-gray-600 dark:text-gray-400 mb-6">Suas avaliações físicas aparecerão aqui em breve</p>
-                                <a href="#" class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg text-white hover:text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition-colors duration-200 shadow-lg hover:shadow-xl">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                    </svg>
-                                    Agendar Avaliação
+                        @if(isset($latestAssessment) && $latestAssessment)
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Peso</p>
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $latestAssessment->weight }} <span class="text-xs font-normal">kg</span></p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Gordura</p>
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $latestAssessment->body_fat_percentage ?? '-' }} <span class="text-xs font-normal">%</span></p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Músculo</p>
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $latestAssessment->muscle_mass_percentage ?? '-' }} <span class="text-xs font-normal">%</span></p>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Data</p>
+                                    <p class="text-sm font-bold text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($latestAssessment->assessment_date)->format('d/m/Y') }}</p>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <a href="{{ route('student.physical_assessments.index') }}" class="inline-flex items-center px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200">
+                                    Ver Detalhes Completos
                                 </a>
                             </div>
-                        </div>
+                        @else
+                            <div class="flex items-center justify-center py-8">
+                                <div class="text-center max-w-md mx-auto">
+                                    <svg class="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                    </svg>
+                                    <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Sem histórico recente</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Suas avaliações físicas aparecerão aqui.</p>
+                                    <a href="{{ route('student.physical_assessments.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200 shadow-sm">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                        </svg>
+                                        Solicitar Avaliação
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -316,4 +333,213 @@
             <div class="h-8"></div>
         </div>
     </div>
+
+    <!-- Modal de Detalhes da Aula -->
+    <div x-show="showModal" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click.self="closeModal()"
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+         style="display: none;">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-lg w-full shadow-2xl"
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+            
+            <!-- Header do Modal -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 rounded-t-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white flex items-center">
+                        <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Detalhes da Aula
+                    </h3>
+                    <button @click="closeModal()" class="text-white/80 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Conteúdo do Modal -->
+            <div class="p-6 space-y-4">
+                <!-- Modalidade -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4">
+                    <h4 class="text-2xl font-bold text-gray-900 dark:text-white" x-text="selectedClass.modality"></h4>
+                </div>
+
+                <!-- Informações da Aula -->
+                <div class="space-y-3">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Data</p>
+                            <p class="font-semibold text-gray-900 dark:text-white" x-text="selectedClass.date"></p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Horário</p>
+                            <p class="font-semibold text-gray-900 dark:text-white" x-text="selectedClass.startTime + ' - ' + selectedClass.endTime"></p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Local</p>
+                            <p class="font-semibold text-gray-900 dark:text-white" x-text="'Sala ' + selectedClass.room"></p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Instrutor</p>
+                            <p class="font-semibold text-gray-900 dark:text-white" x-text="selectedClass.instructor"></p>
+                        </div>
+                    </div>
+
+                    <div x-show="selectedClass.description" class="flex items-start">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Descrição</p>
+                            <p class="text-gray-900 dark:text-white" x-text="selectedClass.description"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mensagem de Feedback -->
+                <div x-show="feedbackMessage" 
+                     x-transition
+                     :class="feedbackType === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200' : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200'"
+                     class="p-4 rounded-lg">
+                    <p x-text="feedbackMessage"></p>
+                </div>
+            </div>
+
+            <!-- Footer do Modal -->
+            <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-b-2xl flex flex-col sm:flex-row gap-3">
+                <button @click="closeModal()" 
+                        class="flex-1 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium">
+                    Fechar
+                </button>
+                <button @click="cancelBooking()" 
+                        :disabled="isCanceling"
+                        :class="isCanceling ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'"
+                        class="flex-1 px-6 py-3 text-white rounded-lg transition-colors font-medium flex items-center justify-center">
+                    <svg x-show="isCanceling" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span x-text="isCanceling ? 'Cancelando...' : 'Cancelar Agendamento'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('classDetailsModal', () => ({
+            showModal: false,
+            isCanceling: false,
+            feedbackMessage: '',
+            feedbackType: '',
+            selectedClass: {
+                id: null,
+                modality: '',
+                date: '',
+                startTime: '',
+                endTime: '',
+                room: '',
+                instructor: '',
+                description: ''
+            },
+
+            showClassDetails(id, modality, date, startTime, endTime, room, instructor, description) {
+                this.selectedClass = {
+                    id: id,
+                    modality: modality,
+                    date: date,
+                    startTime: startTime,
+                    endTime: endTime,
+                    room: room,
+                    instructor: instructor,
+                    description: description
+                };
+                this.feedbackMessage = '';
+                this.showModal = true;
+            },
+
+            closeModal() {
+                this.showModal = false;
+                setTimeout(() => {
+                    this.feedbackMessage = '';
+                    this.feedbackType = '';
+                }, 300);
+            },
+
+            async cancelBooking() {
+                if (!confirm('Tem certeza que deseja cancelar este agendamento?')) {
+                    return;
+                }
+
+                this.isCanceling = true;
+                this.feedbackMessage = '';
+
+                try {
+                    const response = await fetch(`/app/cancelar-reserva/${this.selectedClass.id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.feedbackType = 'success';
+                        this.feedbackMessage = 'Agendamento cancelado com sucesso!';
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        this.feedbackType = 'error';
+                        this.feedbackMessage = result.message || 'Erro ao cancelar agendamento';
+                    }
+                } catch (error) {
+                    console.error('Erro ao cancelar agendamento:', error);
+                    this.feedbackType = 'error';
+                    this.feedbackMessage = 'Erro ao cancelar agendamento. Tente novamente.';
+                }
+
+                this.isCanceling = false;
+            }
+        }))
+    });
+</script>
 @endsection

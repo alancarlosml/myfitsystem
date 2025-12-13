@@ -12,6 +12,7 @@ use App\Models\ClassBooking;
 use App\Models\EstablishmentContracts;
 use App\Models\ClassSchedule;
 use App\Models\Modality;
+use App\Models\PhysicalAssessment;
 use App\Models\User;
 use App\Models\StudentContracts;
 use App\Models\Workout;
@@ -147,7 +148,14 @@ class DashboardController extends Controller
             ->join('class_schedules', 'class_bookings.class_schedule_id', '=', 'class_schedules.id')
             ->select('class_bookings.*')
             ->limit(3)
+            ->limit(3)
             ->get();
+
+        // Get latest physical assessment
+        $latestAssessment = PhysicalAssessment::where('student_id', $studentId)
+            ->where('establishment_id', $establishmentId)
+            ->orderBy('assessment_date', 'desc')
+            ->first();
 
         // Get real notifications from database
         $notifications = $this->notificationService->getUnreadForStudent($studentId, 10);
@@ -204,7 +212,9 @@ class DashboardController extends Controller
             'lastWeekClasses' => $lastWeekClasses,
             'activeGoals' => $activeGoals,
             'upcomingClasses' => $upcomingClasses,
-            'notifications' => $notificationsArray
+            'upcomingClasses' => $upcomingClasses,
+            'notifications' => $notificationsArray,
+            'latestAssessment' => $latestAssessment
         ]);
     }
 

@@ -5,8 +5,8 @@
 @extends($layout)
 
 @section('content')
-    <!-- Header Moderno com Gradiente -->
-    <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white">
+    <div x-data="{ ...bookingHandler(), ...classDetailsModal() }" x-init="console.log('Alpine inicializado'); showModal = false; modalType = ''; modalTitle = ''; modalMessage = '';">
+        <!-- Header Moderno com Gradiente -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex items-center justify-between">
                 <div>
@@ -188,8 +188,9 @@
                                                 @endif
 
                                                 @if(isset($schedule->booking_id) && $schedule->booking_id)
-                                                    <button class="bg-gray-500 hover:bg-gray-600 text-gray-200 dark:text-gray-300 hover:text-gray-300 dark:hover:text-gray-300 text-sm px-4 py-2 rounded-lg transition-colors duration-200 font-medium group-hover:scale-105">
-                                                        Detalhes
+                                                    <button @click="showClassDetails({{ $schedule->booking_id }}, '{{ $schedule->modality->name ?? 'Aula' }}', '{{ \Carbon\Carbon::parse($schedule->class_date)->locale('pt_BR')->isoFormat('dddd, DD/MM/YYYY') }}', '{{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }}', '{{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}', '{{ $schedule->class_room ?? 'Principal' }}', '{{ $schedule->instructor ?? 'Equipe FitSystem' }}', '{{ $schedule->description ?? '' }}')" 
+                                                            class="bg-gray-500 hover:bg-gray-600 text-gray-200 dark:text-gray-300 hover:text-gray-300 dark:hover:text-gray-300 text-sm px-4 py-2 rounded-lg transition-colors duration-200 font-medium group-hover:scale-105">
+                                                        Ver Detalhes
                                                     </button>
                                                 @else
                                                     <button @click="bookClass($event)"
@@ -270,6 +271,133 @@
             </div>
         </div>
         </section>
+
+        <!-- Modal de Detalhes da Aula -->
+        <div x-show="showDetailsModal" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click.self="closeDetailsModal()"
+             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+             style="display: none;">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-lg w-full shadow-2xl"
+                 x-transition:enter="transition ease-out duration-300 transform"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="transition ease-in duration-200 transform"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                
+                <!-- Header do Modal -->
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 rounded-t-2xl">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Detalhes da Aula
+                        </h3>
+                        <button @click="closeDetailsModal()" class="text-white/80 hover:text-white transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Conteúdo do Modal -->
+                <div class="p-6 space-y-4">
+                    <!-- Modalidade -->
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4">
+                        <h4 class="text-2xl font-bold text-gray-900 dark:text-white" x-text="selectedClass.modality"></h4>
+                    </div>
+
+                    <!-- Informações da Aula -->
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Data</p>
+                                <p class="font-semibold text-gray-900 dark:text-white" x-text="selectedClass.date"></p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Horário</p>
+                                <p class="font-semibold text-gray-900 dark:text-white" x-text="selectedClass.startTime + ' - ' + selectedClass.endTime"></p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Local</p>
+                                <p class="font-semibold text-gray-900 dark:text-white" x-text="'Sala ' + selectedClass.room"></p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Instrutor</p>
+                                <p class="font-semibold text-gray-900 dark:text-white" x-text="selectedClass.instructor"></p>
+                            </div>
+                        </div>
+
+                        <div x-show="selectedClass.description" class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Descrição</p>
+                                <p class="text-gray-900 dark:text-white" x-text="selectedClass.description"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mensagem de Feedback -->
+                    <div x-show="detailsFeedbackMessage" 
+                         x-transition
+                         :class="detailsFeedbackType === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200' : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200'"
+                         class="p-4 rounded-lg">
+                        <p x-text="detailsFeedbackMessage"></p>
+                    </div>
+                </div>
+
+                <!-- Footer do Modal -->
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-b-2xl flex flex-col sm:flex-row gap-3">
+                    <button @click="closeDetailsModal()" 
+                            class="flex-1 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium">
+                        Fechar
+                    </button>
+                    <button @click="cancelBookingFromDetails()" 
+                            :disabled="isCancelingDetails"
+                            :class="isCancelingDetails ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'"
+                            class="flex-1 px-6 py-3 text-white rounded-lg transition-colors font-medium flex items-center justify-center">
+                        <svg x-show="isCancelingDetails" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span x-text="isCancelingDetails ? 'Cancelando...' : 'Cancelar Agendamento'"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     <script>
@@ -366,6 +494,89 @@
                 }
             }));
         });
+    </script>
+
+    <script>
+        // Função para modal de detalhes
+        function classDetailsModal() {
+            return {
+                showDetailsModal: false,
+                isCancelingDetails: false,
+                detailsFeedbackMessage: '',
+                detailsFeedbackType: '',
+                selectedClass: {
+                    id: null,
+                    modality: '',
+                    date: '',
+                    startTime: '',
+                    endTime: '',
+                    room: '',
+                    instructor: '',
+                    description: ''
+                },
+
+                showClassDetails(id, modality, date, startTime, endTime, room, instructor, description) {
+                    this.selectedClass = {
+                        id: id,
+                        modality: modality,
+                        date: date,
+                        startTime: startTime,
+                        endTime: endTime,
+                        room: room,
+                        instructor: instructor,
+                        description: description
+                    };
+                    this.detailsFeedbackMessage = '';
+                    this.showDetailsModal = true;
+                },
+
+                closeDetailsModal() {
+                    this.showDetailsModal = false;
+                    setTimeout(() => {
+                        this.detailsFeedbackMessage = '';
+                        this.detailsFeedbackType = '';
+                    }, 300);
+                },
+
+                async cancelBookingFromDetails() {
+                    if (!confirm('Tem certeza que deseja cancelar este agendamento?')) {
+                        return;
+                    }
+
+                    this.isCancelingDetails = true;
+                    this.detailsFeedbackMessage = '';
+
+                    try {
+                        const response = await fetch(`/app/cancelar-reserva/${this.selectedClass.id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            this.detailsFeedbackType = 'success';
+                            this.detailsFeedbackMessage = 'Agendamento cancelado com sucesso!';
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            this.detailsFeedbackType = 'error';
+                            this.detailsFeedbackMessage = result.message || 'Erro ao cancelar agendamento';
+                        }
+                    } catch (error) {
+                        console.error('Erro ao cancelar agendamento:', error);
+                        this.detailsFeedbackType = 'error';
+                        this.detailsFeedbackMessage = 'Erro ao cancelar agendamento. Tente novamente.';
+                    }
+
+                    this.isCancelingDetails = false;
+                }
+            }
+        }
     </script>
 
 @endsection

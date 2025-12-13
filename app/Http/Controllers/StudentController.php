@@ -242,6 +242,8 @@ class StudentController extends Controller
             'start_date' => $validatedData['start_date'],
             'end_date' => $validatedData['end_date'],
             'active' => $validatedData['active'] ?? true,
+            'status' => 'pago', // Novo cadastro considera como pago (simulação de pagamento)
+            'paid_at' => now(),
         ]);
 
         // Salva o contrato para o aluno no estabelecimento
@@ -251,5 +253,39 @@ class StudentController extends Controller
 
         // Redirect back to a relevant page with a success message
         return redirect()->back()->with('success', 'Contrato criado com sucesso');
+    }
+
+    /**
+     * Marcar contrato de aluno como pago
+     */
+    public function markContractAsPaid($studentId, $establishmentId, $contractId)
+    {
+        $contract = StudentContracts::where('student_id', $studentId)
+            ->where('establishment_id', $establishmentId)
+            ->findOrFail($contractId);
+
+        $contract->update([
+            'status' => 'pago',
+            'paid_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Contrato do aluno marcado como pago com sucesso!');
+    }
+
+    /**
+     * Marcar contrato de aluno como pendente
+     */
+    public function markContractAsPending($studentId, $establishmentId, $contractId)
+    {
+        $contract = StudentContracts::where('student_id', $studentId)
+            ->where('establishment_id', $establishmentId)
+            ->findOrFail($contractId);
+
+        $contract->update([
+            'status' => 'pendente',
+            'paid_at' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Contrato do aluno marcado como pendente.');
     }
 }

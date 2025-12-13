@@ -16,7 +16,7 @@ class CheckUserGuard
     public function handle(Request $request, Closure $next, $guard = 'user')
     {
         if (!Auth::guard($guard)->check()) {
-            return redirect()->route('gestao.login');
+            return redirect()->route('user.login');
         }
 
         return $next($request);
