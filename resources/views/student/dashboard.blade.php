@@ -9,7 +9,7 @@
     <!-- Header Moderno com Gradiente -->
     <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-3xl font-bold text-white">Olá, {{ auth()->guard('student')->user()->name }}! 👋</h1>
                     <p class="mt-1 text-blue-100">Bem-vindo ao seu painel de controle</p>
@@ -17,7 +17,6 @@
                 <div class="flex items-center space-x-4">
                     <div class="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
                         <p class="text-sm font-medium text-white">{{ \Carbon\Carbon::now()->locale('pt_BR')->isoFormat('dddd, D [de] MMMM') }}</p>
-                        <p class="text-xs text-blue-100">{{ \Carbon\Carbon::now()->locale('pt_BR')->isoFormat('YYYY') }}</p>
                     </div>
                     <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
                         <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -32,94 +31,94 @@
     <div class="py-12 bg-gray-50 dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Cards de Métricas Modernos -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
                 <!-- Card de Aulas no Mês -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4">
-                        <div class="flex items-center justify-between">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-3 md:p-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
                             <div class="text-white">
-                                <p class="text-blue-100 text-sm font-medium">Aulas no Mês</p>
-                                <h3 class="text-3xl font-bold text-white">{{ $classesThisMonth }}</h3>
+                                <p class="text-blue-100 text-xs md:text-sm font-medium">Aulas/Mês</p>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white">{{ $classesThisMonth }}</h3>
                             </div>
-                            <div class="bg-white/20 rounded-lg p-3">
-                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-white/20 rounded-lg p-2 md:p-3 self-start md:self-center hidden md:block">
+                                <svg class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
-                    <div class="p-4 bg-white dark:bg-gray-800">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                            {{ ucfirst(\Carbon\Carbon::now()->translatedFormat('F')) }}
+                    <div class="p-2 md:p-4 bg-white dark:bg-gray-800">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            {{ ucfirst(\Carbon\Carbon::now()->translatedFormat('M')) }}
                         </span>
                     </div>
                 </div>
 
                 <!-- Card de Aulas no Ano -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                    <div class="bg-gradient-to-r from-green-500 to-green-600 p-4">
-                        <div class="flex items-center justify-between">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 p-3 md:p-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
                             <div class="text-white">
-                                <p class="text-green-100 text-sm font-medium">Aulas no Ano</p>
-                                <h3 class="text-3xl font-bold text-white">{{ $classesThisYear }}</h3>
+                                <p class="text-green-100 text-xs md:text-sm font-medium">Aulas/Ano</p>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white">{{ $classesThisYear }}</h3>
                             </div>
-                            <div class="bg-white/20 rounded-lg p-3">
-                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-white/20 rounded-lg p-2 md:p-3 self-start md:self-center hidden md:block">
+                                <svg class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
-                    <div class="p-4 bg-white dark:bg-gray-800">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                            Meta: {{ $classesThisYear * 0.9 }} aulas
+                    <div class="p-2 md:p-4 bg-white dark:bg-gray-800">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            Meta: {{ $classesThisYear * 0.9 }}
                         </span>
                     </div>
                 </div>
 
                 <!-- Card de Sequência -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-4">
-                        <div class="flex items-center justify-between">
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-3 md:p-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
                             <div class="text-white">
-                                <p class="text-purple-100 text-sm font-medium">Sequência</p>
-                                <h3 class="text-3xl font-bold text-white">{{ $streakDays }}</h3>
+                                <p class="text-purple-100 text-xs md:text-sm font-medium">Sequência</p>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white">{{ $streakDays }}</h3>
                             </div>
-                            <div class="bg-white/20 rounded-lg p-3">
-                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-white/20 rounded-lg p-2 md:p-3 self-start md:self-center hidden md:block">
+                                <svg class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
-                    <div class="p-4 bg-white dark:bg-gray-800">
+                    <div class="p-2 md:p-4 bg-white dark:bg-gray-800">
                         <div class="flex items-center">
                             <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                                 <div class="bg-purple-600 h-2 rounded-full transition-all duration-1000" style="width: {{ min($streakDays * 2, 100) }}%"></div>
                             </div>
-                            <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">dias</span>
+                            <span class="ml-2 text-xs font-medium text-gray-700 dark:text-gray-300">dias</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Card de Troféus -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-                    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-4">
-                        <div class="flex items-center justify-between">
+                    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-3 md:p-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
                             <div class="text-white">
-                                <p class="text-yellow-100 text-sm font-medium">Conquistas</p>
-                                <h3 class="text-3xl font-bold text-white">{{ $achievements }}</h3>
+                                <p class="text-yellow-100 text-xs md:text-sm font-medium">Troféus</p>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white">{{ $achievements }}</h3>
                             </div>
-                            <div class="bg-white/20 rounded-lg p-3">
-                                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-white/20 rounded-lg p-2 md:p-3 self-start md:self-center hidden md:block">
+                                <svg class="w-6 h-6 md:w-8 md:h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                 </svg>
                             </div>
                         </div>
                     </div>
-                    <div class="p-4 bg-white dark:bg-gray-800">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                            🎖️ {{ ceil($achievements/3) }} badges
+                    <div class="p-2 md:p-4 bg-white dark:bg-gray-800">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                            {{ ceil($achievements/3) }} badges
                         </span>
                     </div>
                 </div>

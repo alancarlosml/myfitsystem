@@ -240,13 +240,13 @@
                             </div>
 
                             <!-- Controle da Série -->
-                            <div class="flex items-center justify-center space-x-4">
+                            <div class="flex flex-wrap sm:flex-nowrap items-center justify-center gap-4 w-full">
                                 <button @click="previousExercise()"
                                         :disabled="currentExerciseIndex === 0"
                                         :class="currentExerciseIndex === 0
                                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                                : 'bg-blue-500 hover:bg-blue-600 text-white'"
-                                        class="flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-colors">
+                                        class="order-1 flex-1 sm:flex-none flex items-center justify-center space-x-2 px-4 sm:px-6 py-3 rounded-lg font-medium transition-colors">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                                     </svg>
@@ -254,7 +254,7 @@
                                 </button>
 
                                 <button @click="completeCurrentExercise()"
-                                        class="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-medium text-lg transition-colors flex items-center space-x-3">
+                                        class="order-3 sm:order-2 w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-xl font-medium text-lg transition-colors flex items-center justify-center space-x-3">
                                     <span x-show="!isCompletingExercise">✅ Completar Exercício</span>
                                     <span x-show="isCompletingExercise">
                                         <svg class="animate-spin w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,7 +269,7 @@
                                         :class="currentExerciseIndex >= exercises.length - 1
                                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                                : 'bg-blue-500 hover:bg-blue-600 text-white'"
-                                        class="flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-colors">
+                                        class="order-2 sm:order-3 flex-1 sm:flex-none flex items-center justify-center space-x-2 px-4 sm:px-6 py-3 rounded-lg font-medium transition-colors">
                                     <span>Próximo</span>
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
